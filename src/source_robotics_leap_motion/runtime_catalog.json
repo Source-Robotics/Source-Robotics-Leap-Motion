@@ -1,0 +1,13 @@
+{
+  "schema": "source-robotics-leap-motion/catalog",
+  "version": 1,
+  "runtimes": {
+    "windows-x86_64": {
+      "id": "legacy-windows-3.2.1",
+      "url": "https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/releases/download/v0.1.0b1/source-leap-runtime-windows-x86_64-3.2.1.zip",
+      "bytes": 244070193,
+      "sha256": "54b986a36324a94c8465c4d0ed910a7e28491fe7036c71c9ccb1e6aa244f1fab",
+      "unpacked_bytes": 251082723
+    }
+  }
+}
