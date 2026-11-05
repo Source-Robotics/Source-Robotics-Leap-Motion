@@ -1,0 +1,6 @@
+# Output x = -input z; output y = -input x; output z = input y.
+# Inputs are already metres. Gain 0.5 means half-size hand movement.
+[mapping]
+axes = ["-z", "-x", "y"]
+gain = [0.5, 0.5, 0.5]
+

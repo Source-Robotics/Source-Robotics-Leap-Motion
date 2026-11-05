@@ -1,0 +1,18 @@
+Source Robotics Leap Motion runtime asset notices
+
+This separate runtime archive contains proprietary Leap Motion tracking software,
+model data, firmware, and USB driver files from runtime 3.2.1, together with Microsoft
+Visual C++ 2013 runtime libraries. These components retain their respective owners'
+copyrights and licensing terms. The Python project's MIT license does not relicense
+these third-party components.
+
+The project owner confirmed redistribution permission on 5 November 2026. This
+notice records provenance; it does not replace the applicable vendor agreements.
+Preserve the supplied INF files, catalogs, copyright notices, and any accompanying
+agreement required for the released assets.
+
+Leap Motion / Ultraleap software: https://www.ultraleap.com/
+Microsoft runtime libraries: https://www.microsoft.com/
+
+The runtime files are provided separately from the Python wheel. Camera recordings,
+user configuration, certificates, private keys, and GUI applications are excluded.
