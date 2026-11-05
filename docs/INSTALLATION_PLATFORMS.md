@@ -1,11 +1,13 @@
 **Installation and platforms - decision notes, 5 November 2026**
 
-The project owner confirms that redistribution is permitted. This is recorded as
-the project's permission basis. The current alpha remains a local prototype: its
-wheel contains Python code, the engine lives separately under `.tools`, and nothing
-has been published to PyPI. Permission does not itself change the built artifacts.
+The project owner confirms redistribution permission and approved public publication
+of the GitHub repository and beta release. Version 0.1.0b1 implements Windows runtime
+delivery, cache selection, first-use device setup, and shared engine ownership.
+The Python wheel and native runtime are separate assets. PyPI publisher authorization
+is still required for the short package-name installation command.
 
-**Intended published experience.** This flow is the target, not the current release:
+**Intended PyPI experience.** Until PyPI publication is configured, install the beta
+wheel from its GitHub release URL as shown in the README:
 
 ```text
 pip install source-robotics-leap-motion
@@ -28,9 +30,10 @@ hook. Imports must stay free of downloads, elevation, and device connections.
 as ZIP deflate. PyPI's default individual-file limit is 100 MB for personal projects
 and 200 MB for organization-owned projects. A wheel containing this payload would
 need an increased limit. A small pip package with a versioned first-use runtime
-download is therefore the initial delivery recommendation. Runtime URLs/hosting,
-checksums, caching, interrupted-download handling, and automatic discovery are not
-implemented yet. Download delivery does not reduce the engine's disk footprint.
+download is the implemented delivery path. A pinned GitHub Release URL, checksums,
+atomic caching, transfer resume/restart handling, and automatic discovery are now
+implemented. With driver files and notices, the release asset is about 244 MB
+compressed and 251 MB extracted. Download delivery does not reduce disk footprint.
 [PyPI storage limits](https://docs.pypi.org/project-management/storage-limits/)
 
 A bundled runtime wheel remains an alternative after a suitable upload limit is
@@ -40,18 +43,20 @@ available. Each native payload must have the correct platform/architecture tag.
 
 | Platform | Vendor availability | This project's current status |
 | --- | --- | --- |
-| Windows x64 | Hyperion 6.2.0; archived 3.2.1 also listed | Live service reuse and a private 3.2.1 engine verified. Automatic delivery and clean-PC USB setup pending. |
-| Ubuntu 22.04 x86_64/amd64 | Hyperion 6.2.0; native Linux packages | Native loader, lifecycle integration, and real hardware testing pending. |
-| macOS 11+, Intel | Hyperion 6.2.0 Intel download | Native loader, lifecycle integration, and real hardware testing pending. |
-| macOS 11+, Apple Silicon | Hyperion 6.2.0 Apple Silicon download | Native loader, lifecycle integration, and real hardware testing pending. |
+| Windows x64 | Hyperion 6.2.0; archived 3.2.1 also listed | Private 3.2.1 engine, delivery/cache reuse, client sharing, restart and crash cleanup verified. Clean-PC driver setup pending. |
+| Ubuntu 22.04 x86_64/amd64 | Hyperion 6.2.0; native Linux packages | Experimental native loader and setup guidance implemented; use an installed vendor service. Hardware testing pending. |
+| macOS 11+, Intel | Hyperion 6.2.0 Intel download | Experimental native loader and setup guidance implemented. Hardware testing pending. |
+| macOS 11+, Apple Silicon | Hyperion 6.2.0 Apple Silicon download | Experimental native loader and setup guidance implemented. Hardware testing pending. |
 
 These vendor targets come from the Original controller's download page. They are not
 claims that our current Windows implementation works on those other platforms.
 [Original controller downloads](https://www.ultraleap.com/downloads/leap-controller/)
 
 The managed launcher currently uses a Windows executable, Windows jobs, and Windows
-process flags. The native LeapC backend also currently requires Windows x64. Linux
-and macOS require their own vendor engine/library and process/device integration.
+process flags. The native LeapC backend now selects WinDLL on Windows and CDLL on
+Linux/macOS, with platform-specific discovery and background-frame policy. Linux
+and macOS use their own installed vendor engine/library; the Windows archive cannot
+be installed on those platforms.
 The common Python frame, mapping, and recording interfaces should remain the same.
 Cross-platform hardware support must be tested before advertising it.
 
@@ -67,5 +72,6 @@ An unplugged camera must not be diagnosed as a missing driver solely because no
 frames arrived. The generic vendor download link offers the complete tracking suite;
 it is a fallback instruction path, not evidence of a ready driver-only download.
 
-The next implementation target is Windows automatic runtime delivery/discovery plus
-a first-use prerequisite check, followed by Linux and macOS native integration.
+The remaining installation gates are PyPI publisher setup, clean-PC driver-only
+validation, and Linux/macOS real-device validation. No Windows driver was replaced
+on this already working PC.

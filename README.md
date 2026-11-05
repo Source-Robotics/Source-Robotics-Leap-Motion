@@ -4,10 +4,18 @@ A Python package for the **Original Leap Motion Controller**, with owned hand da
 recording/replay, and configurable coordinate mapping for custom robot integrations.
 It runs on current Python without `LeapPython.pyd` or a Python 3.8 process.
 
-The package is built locally; it has **not been published to PyPI** yet. Runtime URLs
-are pinned to this repository's `v0.1.0b1` release. The GitHub release must be publicly
-available before automatic downloads work for new users. See [release status and
-validation](docs/BETA_VALIDATION.md) and [publication steps](docs/RELEASING.md).
+The beta is distributed through this repository's `v0.1.0b1` GitHub release. PyPI
+publication is being configured. Install the wheel directly, then start tracking:
+
+```powershell
+python -m pip install https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/releases/download/v0.1.0b1/source_robotics_leap_motion-0.1.0b1-py3-none-any.whl
+source-leap
+```
+
+The Windows engine downloads automatically when needed. First-use driver setup may
+require Windows approval. See [release status and validation](docs/BETA_VALIDATION.md)
+and [publication steps](docs/RELEASING.md). Linux/macOS currently use an installed
+vendor tracking service and remain experimental for hardware use.
 
 **Try it in this project's virtual environment.** Python 3.15.2 and the package are
 already installed in `.venv`. No activation is necessary:

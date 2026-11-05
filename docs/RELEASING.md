@@ -1,9 +1,9 @@
 **Release preparation for 0.1.0b1**
 
-The source target is `Source-Robotics/Source-Robotics-Leap-Motion`. It is currently
-private. Publishing a Python wheel while its pinned runtime URL is private would
-leave new users unable to download the engine. Keep publication gated on anonymous
-availability of that runtime asset. A draft GitHub release can be prepared first.
+The source target is `Source-Robotics/Source-Robotics-Leap-Motion`. The owner explicitly
+approved making it public and publishing the beta. Keep future publication gated on
+anonymous availability of the pinned runtime asset. A draft release can be prepared
+first; publication makes its asset available to ordinary package users.
 
 The local release outputs are:
 

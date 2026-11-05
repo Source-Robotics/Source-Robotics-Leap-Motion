@@ -28,6 +28,12 @@ classifiers = [
 [project.optional-dependencies]
 dev = ["build>=1.2", "pytest>=8", "ruff>=0.14"]
 
+[project.urls]
+Homepage = "https://github.com/Source-Robotics/Source-Robotics-Leap-Motion"
+Documentation = "https://github.com/Source-Robotics/Source-Robotics-Leap-Motion#readme"
+Issues = "https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/issues"
+Releases = "https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/releases"
+
 [project.scripts]
 source-leap = "source_robotics_leap_motion.cli:main"
 

@@ -2,8 +2,9 @@
 
 This release candidate implements automatic runtime delivery and cache selection,
 shared engine ownership, first-use setup, and experimental POSIX LeapC loading.
-The repository is currently private and PyPI publication is pending. Do not interpret
-the configured public download URL as an already available public release.
+The repository was made public with the owner's explicit approval. The GitHub beta
+release is prepared with a public runtime URL; PyPI publication depends on authorizing
+its Trusted Publisher. The direct GitHub wheel installation is the initial beta path.
 
 **Windows checks.** All checks used project-local Python virtual environments.
 
@@ -36,7 +37,11 @@ explicitly. Loader selection is unit-tested. Installed library discovery include
 the documented Ubuntu paths and the macOS application SDK path.
 
 GitHub CI is configured for Python 3.10-3.15 on Windows, Linux, and macOS. CI results
-must be checked after the source branch is pushed; configuration alone is not a pass.
+were checked on source commit `7c2f782`: every Windows and Linux Python job passed,
+along with the package build and metadata checks. macOS 3.11 and 3.13 jobs passed;
+other macOS jobs were still waiting for hosted runners at the time of this report.
+The Windows installed-wheel matrix separately passed all 86 tests on each Python
+minor version from 3.10 through 3.15, with live camera frames and private-recording replay.
 No Linux or Mac hardware test has been performed on this Windows PC. Windows-managed
 runtime archives are deliberately rejected on other platforms, which use an installed
 native vendor service and platform-specific setup instructions.
@@ -45,4 +50,4 @@ native vendor service and platform-specific setup instructions.
 to validate driver-only setup without any previous vendor installation. A working
 developer PC does not provide that evidence. Linux/macOS real-device tests and long
 sessions also remain. Public runtime availability and PyPI publisher configuration
-are required before new users can use the intended public pip installation flow.
+are required before new users can use the short PyPI package-name installation flow.
