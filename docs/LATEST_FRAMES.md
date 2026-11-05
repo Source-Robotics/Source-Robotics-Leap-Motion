@@ -1,7 +1,8 @@
-**Latest-frame acquisition and tracking health — 0.1.0b2 development**
+**Latest-frame acquisition and tracking health — 0.1.0b2**
 
-These features are available in the source checkout and the locally built b2 wheel.
-PyPI currently provides 0.1.0b1. The runtime engine, models, driver, frame data model,
+These features are available in the published
+[0.1.0b2 package on PyPI](https://pypi.org/project/source-robotics-leap-motion/0.1.0b2/).
+The runtime engine, models, driver, frame data model,
 and recording format are unchanged; b2 reuses the pinned b1 runtime download.
 
 Use `Tracker(mode="latest", max_frame_age=0.1)` when application work runs slower
