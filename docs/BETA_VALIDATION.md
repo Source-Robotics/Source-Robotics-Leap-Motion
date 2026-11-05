@@ -2,9 +2,13 @@
 
 This release candidate implements automatic runtime delivery and cache selection,
 shared engine ownership, first-use setup, and experimental POSIX LeapC loading.
-The repository was made public with the owner's explicit approval. The GitHub beta
-release is prepared with a public runtime URL; PyPI publication depends on authorizing
-its Trusted Publisher. The direct GitHub wheel installation is the initial beta path.
+The repository and GitHub beta release are public with the owner's explicit approval.
+The matching PyPI pending publisher was registered and publication succeeded on the
+second workflow attempt. The normal package-name pip installation is now available.
+PyPI wheel/sdist SHA-256 digests match the original GitHub release assets exactly.
+A fresh Python 3.10.11 venv installed the package by name from PyPI, ran the synthetic
+tracker, and passed dependency checks. Public GitHub installation, runtime download,
+and real camera frames were also verified separately.
 
 **Windows checks.** All checks used project-local Python virtual environments.
 
@@ -50,4 +54,4 @@ native vendor service and platform-specific setup instructions.
 to validate driver-only setup without any previous vendor installation. A working
 developer PC does not provide that evidence. Linux/macOS real-device tests and long
 sessions also remain. Public runtime availability and PyPI publisher configuration
-are required before new users can use the short PyPI package-name installation flow.
+have been verified/configured for the short PyPI package-name installation flow.
