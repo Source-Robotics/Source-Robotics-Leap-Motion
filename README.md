@@ -4,7 +4,7 @@ A Python package for the **Original Leap Motion Controller**, with owned hand da
 recording/replay, and configurable coordinate mapping for custom robot integrations.
 It runs on current Python without `LeapPython.pyd` or a Python 3.8 process.
 
-Beta **0.1.0b1** is published on [PyPI](https://pypi.org/project/source-robotics-leap-motion/).
+Beta **0.1.0b2** is published on [PyPI](https://pypi.org/project/source-robotics-leap-motion/).
 Install it, then start tracking:
 
 ```powershell
@@ -17,9 +17,8 @@ require Windows approval. See [release status and validation](docs/BETA_VALIDATI
 and [publication steps](docs/RELEASING.md). Linux/macOS currently use an installed
 vendor tracking service and remain experimental for hardware use.
 
-This checkout contains **0.1.0b2 development**, adding latest-frame acquisition and
-tracking health. These additions are available from source; they are not in the
-published 0.1.0b1 package. See [the latest-frame guide](docs/LATEST_FRAMES.md).
+Version **0.1.0b2** includes latest-frame acquisition and tracking health. Both are
+available in the published package. See [the latest-frame guide](docs/LATEST_FRAMES.md).
 
 **Try it in this project's virtual environment.** Python 3.15.2 and the package are
 already installed in `.venv`. No activation is necessary:
@@ -42,9 +41,9 @@ python -m pip install .
 source-leap --demo
 ```
 
-Python **3.10 or newer** is required. The wheel has been installed and tested on
+Python **3.10 or newer** is required. The published b2 wheel was installed and tested on
 **CPython 3.10.11, 3.11.9, 3.12.10, 3.13.17, 3.14.10, and 3.15.2, Windows x64**.
-Each version passed all 86 tests, received live camera frames, and replayed a recorded
+Each version passed all 107 tests, received live camera frames, and replayed a recorded
 real hand. Python 3.10 additionally uses small `tomli` and `typing-extensions`
 backports, installed automatically by pip. All versions use `websocket-client`.
 Python 3.9 and earlier are not supported by the new package.
@@ -143,7 +142,7 @@ finger/arm rotations. The legacy backend exposes finger joint positions when sup
 by protocol v6, derives palm orientation from normal/direction, and reports unavailable
 bone rotations and pinch distance as `None`. It never substitutes a made-up rotation.
 
-**Latest frames and health (0.1.0b2 development).** A slow application can request
+**Latest frames and health (0.1.0b2).** A slow application can request
 the newest unread frame instead of falling behind the camera stream:
 
 ```python
