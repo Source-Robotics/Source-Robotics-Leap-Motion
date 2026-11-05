@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import queue
 import secrets
+import socket
 import sys
 import threading
 import time
@@ -23,6 +24,16 @@ from .mapping import Mapping
 from .models import Vector3
 from .teleoperation import Teleoperator
 from .tracker import Tracker
+
+
+class _LabHTTPServer(ThreadingHTTPServer):
+    # Windows SO_REUSEADDR permits competing listeners. Keep each lab exclusive.
+    allow_reuse_address = sys.platform != "win32"
+
+    def server_bind(self):
+        if sys.platform == "win32":
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
 
 
 def simulation_config() -> TeleoperationConfig:
@@ -118,7 +129,7 @@ class LabServer:
                     return
                 self.reply(202, b'{"accepted":true}')
 
-        self._server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+        self._server = _LabHTTPServer(("127.0.0.1", port), Handler)
         self._server.daemon_threads = True
         self._thread = threading.Thread(
             target=self._server.serve_forever, name="source-leap-lab", daemon=True

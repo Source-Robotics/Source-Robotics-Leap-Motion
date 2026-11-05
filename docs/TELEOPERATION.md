@@ -129,7 +129,7 @@ mapping, smoothing, command rate caps, adapter capabilities/failures/cleanup, st
 configuration, CLI telemetry, and packaged local HTTP assets/actions. Actual robot
 motion and clean-PC driver installation remain separate hardware validation work.
 
-On Windows, the installed b3 wheel passed **179 tests on each of Python 3.10.11,
+On Windows, the installed b3 wheel passed **180 tests on each of Python 3.10.11,
 3.11.9, 3.12.10, 3.13.17, 3.14.10, and 3.15.2**. Each environment received 30 live
 sequential frames and 30 latest-mode frames. The previously recorded 1,047-frame
 session, containing 50 complete left-hand samples, generated 18 simulated targets

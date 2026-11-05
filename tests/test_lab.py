@@ -1,6 +1,7 @@
 import json
 import urllib.error
 import urllib.request
+from urllib.parse import urlsplit
 
 import pytest
 
@@ -67,6 +68,12 @@ def test_lab_server_serves_packaged_viewer_and_authenticated_bounded_actions():
             action(server._token, server.url)
         assert caught.value.code == 429
     assert not server._thread.is_alive()
+
+
+def test_lab_port_cannot_be_shared_by_two_simulator_processes():
+    with LabServer() as server:
+        with pytest.raises(OSError):
+            LabServer(urlsplit(server.url).port)
 
 
 @pytest.mark.parametrize(
