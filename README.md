@@ -1,10 +1,10 @@
-**Source Robotics Leap Motion - 0.1.0b1 beta**
+**Source Robotics Leap Motion**
 
 A Python package for the **Original Leap Motion Controller**, with owned hand data,
 recording/replay, and configurable coordinate mapping for custom robot integrations.
 It runs on current Python without `LeapPython.pyd` or a Python 3.8 process.
 
-The beta is published on [PyPI](https://pypi.org/project/source-robotics-leap-motion/).
+Beta **0.1.0b1** is published on [PyPI](https://pypi.org/project/source-robotics-leap-motion/).
 Install it, then start tracking:
 
 ```powershell
@@ -16,6 +16,10 @@ The Windows engine downloads automatically when needed. First-use driver setup m
 require Windows approval. See [release status and validation](docs/BETA_VALIDATION.md)
 and [publication steps](docs/RELEASING.md). Linux/macOS currently use an installed
 vendor tracking service and remain experimental for hardware use.
+
+This checkout contains **0.1.0b2 development**, adding latest-frame acquisition and
+tracking health. These additions are available from source; they are not in the
+published 0.1.0b1 package. See [the latest-frame guide](docs/LATEST_FRAMES.md).
 
 **Try it in this project's virtual environment.** Python 3.15.2 and the package are
 already installed in `.venv`. No activation is necessary:
@@ -138,6 +142,37 @@ Frames are immutable Python snapshots and retain no SDK pointers. LeapC includes
 finger/arm rotations. The legacy backend exposes finger joint positions when supplied
 by protocol v6, derives palm orientation from normal/direction, and reports unavailable
 bone rotations and pinch distance as `None`. It never substitutes a made-up rotation.
+
+**Latest frames and health (0.1.0b2 development).** A slow application can request
+the newest unread frame instead of falling behind the camera stream:
+
+```python
+from source_robotics_leap_motion import Tracker
+
+with Tracker(mode="latest", max_frame_age=0.1) as tracker:
+    frame = tracker.read(timeout=0.25)
+    print(frame.right_hand)
+    print(tracker.health.to_dict())
+```
+
+One background thread owns the source and replaces a single pending frame. Skipped
+frames are counted. Reads wait for a new frame and never repeat a consumed frame.
+An unread frame older than `max_frame_age` is discarded; if no fresh frame arrives
+before the read deadline, `StaleFrameError` (a `TrackingTimeoutError`) is raised.
+The default remains sequential, which is appropriate when recording every frame.
+
+`tracker.health` reports connection state, recent received FPS, local frame age,
+received/delivered/skipped/duplicate counts, timeouts, timestamp resets, and hand
+count. No hands still means the camera is streaming. Age is measured **since Python
+received the frame**, not end-to-end camera latency. It cannot detect every delay
+inside a service or transport. See [semantics and validation](docs/LATEST_FRAMES.md).
+
+```powershell
+.\.venv\Scripts\source-leap.exe --latest --health --duration 10
+.\.venv\Scripts\source-leap.exe --demo --latest --health --frames 60 --json
+```
+
+Health JSON goes to stderr; frame JSON on stdout and the recording schema are unchanged.
 
 **Record and replay.** Existing recordings are protected by default:
 

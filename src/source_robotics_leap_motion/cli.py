@@ -40,6 +40,20 @@ def _tracking_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--frames", type=_positive_int, help="stop after this many frames")
     parser.add_argument("--duration", type=_positive_float, help="stop after this many seconds")
     parser.add_argument("--json", action="store_true", help="write every frame as JSON Lines")
+    parser.add_argument(
+        "--latest", action="store_true", help="keep only the newest unread frame; may skip frames"
+    )
+    parser.add_argument(
+        "--max-frame-age",
+        type=_positive_float,
+        default=0.1,
+        help="latest-mode local receipt age limit in seconds (default: 0.1)",
+    )
+    parser.add_argument(
+        "--health",
+        action="store_true",
+        help="write health JSON to stderr while streaming and on exit",
+    )
     runtime = parser.add_mutually_exclusive_group()
     runtime.add_argument("--library", help="explicit LeapC library path for development")
     runtime.add_argument("--runtime-dir", help="use a prepared local legacy runtime if needed")
@@ -90,6 +104,7 @@ def _parser() -> argparse.ArgumentParser:
     replay.add_argument("--frames", type=_positive_int)
     replay.add_argument("--duration", type=_positive_float)
     replay.add_argument("--json", action="store_true")
+    replay.add_argument("--health", action="store_true")
     replay.add_argument("--timeout", type=_positive_float, default=5)
     runtime = commands.add_parser("runtime", help="prepare or inspect a local runtime prototype")
     actions = runtime.add_subparsers(dest="runtime_action", required=True)
@@ -247,6 +262,8 @@ def _runtime(args) -> int:
 
 
 def _run(args) -> int:
+    mode = "latest" if getattr(args, "latest", False) else "sequential"
+    max_age = getattr(args, "max_frame_age", 0.1)
     if args.command == "replay":
         tracker = Tracker(
             backend=ReplayBackend(args.path, realtime=args.realtime, speed=args.speed),
@@ -255,13 +272,18 @@ def _run(args) -> int:
     elif args.demo:
         if args.library or args.runtime_dir:
             raise ValueError("--demo cannot be combined with a runtime or library selection")
-        tracker = Tracker.demo()
+        tracker = Tracker.demo(mode=mode, max_frame_age=max_age, timeout=args.timeout)
     else:
         tracker = Tracker(
-            library_path=args.library, runtime_dir=args.runtime_dir, timeout=args.timeout
+            library_path=args.library,
+            runtime_dir=args.runtime_dir,
+            timeout=args.timeout,
+            mode=mode,
+            max_frame_age=max_age,
         )
     count = 0
     last_print = -math.inf
+    last_health = time.perf_counter()
     started = time.perf_counter()
     recorder = Recorder(args.path, overwrite=args.overwrite) if args.command == "record" else None
     # Open tracking first so a missing runtime does not create an empty recording.
@@ -276,43 +298,57 @@ def _run(args) -> int:
                 else "live"
             )
             print(f"Source: {source}. Positions in metres. Ctrl+C to stop.", file=sys.stderr)
-        while True:
-            elapsed = time.perf_counter() - started
-            if args.duration is not None and elapsed >= args.duration:
-                break
-            timeout = args.timeout
-            if args.duration is not None:
-                timeout = min(timeout, args.duration - elapsed)
-            try:
-                frame = tracker.read(timeout=timeout)
-            except StopIteration:
-                break
-            except TrackingTimeoutError:
-                if args.duration is not None and time.perf_counter() - started >= args.duration:
+        last_health = started
+        try:
+            while True:
+                elapsed = time.perf_counter() - started
+                if args.duration is not None and elapsed >= args.duration:
                     break
-                raise
-            if recorder is not None:
-                recorder.write(frame)
-            count += 1
-            now = time.perf_counter()
-            if args.json:
-                print(json.dumps(frame_to_dict(frame), allow_nan=False, separators=(",", ":")))
-            elif now - last_print >= 0.1:
-                description = (
-                    " | ".join(
-                        f"{hand.handedness} #{hand.id}: "
-                        f"({hand.palm.position.x:+.3f}, {hand.palm.position.y:+.3f}, "
-                        f"{hand.palm.position.z:+.3f}) grab={hand.grab_strength:.2f}"
-                        for hand in frame.hands
+                timeout = args.timeout
+                if args.duration is not None:
+                    timeout = min(timeout, args.duration - elapsed)
+                try:
+                    frame = tracker.read(timeout=timeout)
+                except StopIteration:
+                    break
+                except TrackingTimeoutError:
+                    if args.duration is not None and time.perf_counter() - started >= args.duration:
+                        break
+                    raise
+                if recorder is not None:
+                    recorder.write(frame)
+                count += 1
+                now = time.perf_counter()
+                if args.json:
+                    print(json.dumps(frame_to_dict(frame), allow_nan=False, separators=(",", ":")))
+                elif now - last_print >= 0.1:
+                    description = (
+                        " | ".join(
+                            f"{hand.handedness} #{hand.id}: "
+                            f"({hand.palm.position.x:+.3f}, {hand.palm.position.y:+.3f}, "
+                            f"{hand.palm.position.z:+.3f}) grab={hand.grab_strength:.2f}"
+                            for hand in frame.hands
+                        )
+                        or "no hands"
                     )
-                    or "no hands"
-                )
-                print(f"Frame {frame.id}: {description}", flush=True)
-                last_print = now
-            if args.frames is not None and count >= args.frames:
-                break
+                    print(f"Frame {frame.id}: {description}", flush=True)
+                    last_print = now
+                if args.health and now - last_health >= 1:
+                    _print_health(tracker)
+                    last_health = now
+                if args.frames is not None and count >= args.frames:
+                    break
+        finally:
+            if args.health:
+                _print_health(tracker)
     print(f"Processed {count} frame(s).", file=sys.stderr)
     return 0
+
+
+def _print_health(tracker: Tracker) -> None:
+    print(
+        json.dumps({"tracking_health": tracker.health.to_dict()}, allow_nan=False), file=sys.stderr
+    )
 
 
 def main(argv: list[str] | None = None) -> int:

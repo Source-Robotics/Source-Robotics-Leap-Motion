@@ -17,5 +17,9 @@ class TrackingTimeoutError(LeapError):
     """No tracking frame arrived within the requested deadline."""
 
 
+class StaleFrameError(TrackingTimeoutError):
+    """Latest mode has received frames, but no unread frame is fresh enough."""
+
+
 class RecordingError(LeapError):
     """A recording is invalid, unsupported, or truncated."""
