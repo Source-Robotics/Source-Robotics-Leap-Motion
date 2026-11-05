@@ -6,7 +6,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from source_robotics_leap_motion import Tracker
+from source_robotics_leap_motion import Frame, Tracker
 from source_robotics_leap_motion.backends import _job, managed
 from source_robotics_leap_motion.cli import main
 from source_robotics_leap_motion.errors import ConnectionError, RuntimeNotFoundError
@@ -113,7 +113,7 @@ def launcher(assets, monkeypatch):
     prepare_local_runtime(source, destination)
     monkeypatch.setattr(managed.sys, "platform", "win32")
     backend = Mock()
-    backend.read.return_value = object()
+    backend.read.return_value = Frame(1, 1)
     backend_factory = Mock(return_value=backend)
     monkeypatch.setattr(managed, "LegacyWebSocketBackend", backend_factory)
     busy = Mock(return_value=False)
@@ -222,7 +222,7 @@ def test_child_exit_is_reported_instead_of_reading_another_server(launcher):
 
 
 def test_private_startup_requires_a_frame_and_preserves_it_for_the_caller(launcher):
-    first, second = object(), object()
+    first, second = Frame(1, 1), Frame(2, 2)
     launcher.backend.read.side_effect = [first, second]
     with Tracker(backend=launcher.runtime) as tracker:
         launcher.backend.read.assert_called_once()

@@ -20,6 +20,27 @@ def test_short_duration_exits_normally(capsys):
     assert main(["--demo", "--duration", "0.02"]) == 0
 
 
+def test_latest_cli_keeps_health_separate_from_frame_json(capsys):
+    assert main(["--demo", "--latest", "--health", "--frames", "3", "--json"]) == 0
+    captured = capsys.readouterr()
+    frames = [json.loads(line) for line in captured.out.splitlines()]
+    assert len(frames) == 3
+    health = json.loads(captured.err.splitlines()[0])["tracking_health"]
+    assert health["mode"] == "latest"
+    assert health["delivered_frames"] == 3
+    assert health["last_hand_count"] == 1
+
+
+def test_latest_record_and_replay_health(tmp_path, capsys):
+    path = tmp_path / "latest.jsonl"
+    assert main(["record", str(path), "--demo", "--latest", "--frames", "3"]) == 0
+    capsys.readouterr()
+    assert main(["replay", str(path), "--json", "--health"]) == 0
+    captured = capsys.readouterr()
+    assert len(captured.out.splitlines()) == 3
+    assert json.loads(captured.err.splitlines()[0])["tracking_health"]["status"] == "ended"
+
+
 def test_cli_record_and_replay(tmp_path, capsys):
     path = tmp_path / "demo.jsonl"
     assert main(["record", str(path), "--demo", "--frames", "2"]) == 0
