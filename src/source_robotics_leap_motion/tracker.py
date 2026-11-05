@@ -120,6 +120,11 @@ class Tracker:
         return self
 
     @property
+    def max_frame_age(self) -> float:
+        """Configured local age limit; enforced on reads in latest mode."""
+        return self._max_frame_age
+
+    @property
     def health(self) -> TrackingHealth:
         """Current session statistics. Reading health never accesses the device."""
         return self._health.snapshot()

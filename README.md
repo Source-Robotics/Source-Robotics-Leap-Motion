@@ -17,9 +17,24 @@ require Windows approval. See [release status and validation](docs/BETA_VALIDATI
 and [publication steps](docs/RELEASING.md). Linux/macOS currently use an installed
 vendor tracking service and remain experimental for hardware use.
 
-This checkout contains **0.1.0b2 development**, adding latest-frame acquisition and
-tracking health. These additions are available from source; they are not in the
-published 0.1.0b1 package. See [the latest-frame guide](docs/LATEST_FRAMES.md).
+This checkout contains **0.1.0b3 development**, adding configurable Cartesian
+teleoperation, callback integration, and a browser lab with simulated output. It also
+includes b2's latest-frame acquisition and tracking health. These additions are
+available from source; they are not in the published 0.1.0b1 package. See
+[the teleoperation guide](docs/TELEOPERATION.md) and [latest-frame guide](docs/LATEST_FRAMES.md).
+
+Try the simulated robot target with a synthetic hand, or with your Leap controller:
+
+```powershell
+.\.venv\Scripts\source-leap.exe teleop --demo
+.\.venv\Scripts\source-leap.exe teleop
+```
+
+The local browser viewer starts disarmed. Arm to calibrate, clutch to reposition
+your hand, and disarm to hold output. Both commands use a simulated Cartesian arm.
+The callback API accepts your own controller; joint-only arms supply their kinematics
+in the adapter. Configure workspace, speed limits, axes, gains, smoothing, rotation,
+and gripper mapping in [teleoperation.toml](examples/teleoperation.toml).
 
 **Try it in this project's virtual environment.** Python 3.15.2 and the package are
 already installed in `.venv`. No activation is necessary:
@@ -42,7 +57,7 @@ python -m pip install .
 source-leap --demo
 ```
 
-Python **3.10 or newer** is required. The wheel has been installed and tested on
+Python **3.10 or newer** is required. The published b1 wheel was installed and tested on
 **CPython 3.10.11, 3.11.9, 3.12.10, 3.13.17, 3.14.10, and 3.15.2, Windows x64**.
 Each version passed all 86 tests, received live camera frames, and replayed a recorded
 real hand. Python 3.10 additionally uses small `tomli` and `typing-extensions`

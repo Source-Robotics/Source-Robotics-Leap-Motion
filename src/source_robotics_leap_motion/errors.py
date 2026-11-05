@@ -23,3 +23,11 @@ class StaleFrameError(TrackingTimeoutError):
 
 class RecordingError(LeapError):
     """A recording is invalid, unsupported, or truncated."""
+
+
+class TeleoperationError(LeapError):
+    """Invalid control state, calibration, or robot integration."""
+
+
+class AdapterError(TeleoperationError):
+    """Robot adapter operation failed; inspect the chained original exception."""

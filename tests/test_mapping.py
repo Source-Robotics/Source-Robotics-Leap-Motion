@@ -1,6 +1,24 @@
+import math
+
 import pytest
 
-from source_robotics_leap_motion import Mapping, Vector3
+from source_robotics_leap_motion import Mapping, Quaternion, Vector3
+
+
+def test_arbitrary_frame_rotation_precedes_robot_axis_gains():
+    # Rotate 45 degrees around z, then scale the robot x axis by two.
+    mapping = Mapping(
+        rotation=Quaternion(0, 0, math.sin(math.pi / 8), math.cos(math.pi / 8)),
+        gain=Vector3(2, 1, 1),
+    )
+    point = mapping.map_position(Vector3(1, 0, 0))
+    assert tuple(point) == pytest.approx((math.sqrt(2), math.sqrt(0.5), 0))
+
+
+def test_mapping_toml_supports_explicit_quaternion_rotation(tmp_path):
+    path = tmp_path / "rotation.toml"
+    path.write_text("[mapping]\nrotation = [0.0, 0.0, 1.0, 0.0]\n", encoding="utf-8")
+    assert Mapping.from_toml(path).map_position(Vector3(1, 0, 0)).x == pytest.approx(-1)
 
 
 def test_mapping_preserves_calibrated_robot_origin_and_relative_axes():
