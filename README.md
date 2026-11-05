@@ -1,14 +1,14 @@
-**Source Robotics Leap Motion - 0.1.0b1 release candidate**
+**Source Robotics Leap Motion - 0.1.0b1 beta**
 
 A Python package for the **Original Leap Motion Controller**, with owned hand data,
 recording/replay, and configurable coordinate mapping for custom robot integrations.
 It runs on current Python without `LeapPython.pyd` or a Python 3.8 process.
 
-The beta is distributed through this repository's `v0.1.0b1` GitHub release. PyPI
-publication is being configured. Install the wheel directly, then start tracking:
+The beta is published on [PyPI](https://pypi.org/project/source-robotics-leap-motion/).
+Install it, then start tracking:
 
 ```powershell
-python -m pip install https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/releases/download/v0.1.0b1/source_robotics_leap_motion-0.1.0b1-py3-none-any.whl
+python -m pip install source-robotics-leap-motion
 source-leap
 ```
 

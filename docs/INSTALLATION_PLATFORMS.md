@@ -3,11 +3,10 @@
 The project owner confirms redistribution permission and approved public publication
 of the GitHub repository and beta release. Version 0.1.0b1 implements Windows runtime
 delivery, cache selection, first-use device setup, and shared engine ownership.
-The Python wheel and native runtime are separate assets. PyPI publisher authorization
-is still required for the short package-name installation command.
+The Python wheel and native runtime are separate assets. PyPI publication succeeded
+through the registered Trusted Publisher, and installation by package name was verified.
 
-**Intended PyPI experience.** Until PyPI publication is configured, install the beta
-wheel from its GitHub release URL as shown in the README:
+**Published PyPI experience.** The beta is available by its package name:
 
 ```text
 pip install source-robotics-leap-motion
@@ -72,6 +71,6 @@ An unplugged camera must not be diagnosed as a missing driver solely because no
 frames arrived. The generic vendor download link offers the complete tracking suite;
 it is a fallback instruction path, not evidence of a ready driver-only download.
 
-The remaining installation gates are PyPI publisher setup, clean-PC driver-only
-validation, and Linux/macOS real-device validation. No Windows driver was replaced
+The remaining hardware installation checks are clean-PC driver-only validation
+and Linux/macOS real-device validation. No Windows driver was replaced
 on this already working PC.
