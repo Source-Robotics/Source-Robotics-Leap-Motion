@@ -72,7 +72,7 @@ function Start-Sleep { param($Milliseconds) }
         ],
         capture_output=True,
         text=True,
-        timeout=10,
+        timeout=30,  # Cold PowerShell startup can exceed 10s on a hosted Windows runner.
     )
     assert result.returncode == 0, result.stderr
     service = json.loads(mock_output.read_text(encoding="utf-8-sig"))

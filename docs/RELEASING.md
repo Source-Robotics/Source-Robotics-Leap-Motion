@@ -55,8 +55,9 @@ Environment: pypi
 
 No long-lived PyPI token is required by the prepared workflow. The PyPI account owner
 must authorize the publisher (a pending publisher can create the first project).
-The manually triggered publication workflow runs tests, builds distributions,
-checks metadata and public runtime availability, then publishes through OIDC.
+The manually triggered publication workflow runs tests, downloads the exact existing
+GitHub release wheel/sdist, verifies their GitHub SHA-256 digests, checks metadata and
+public runtime availability, then publishes those same bytes through OIDC.
 [PyPI Trusted Publishing](https://docs.pypi.org/trusted-publishers/using-a-publisher/)
 
 The CI workflow tests installed packages on Windows/Linux/macOS. Hosted runners have
