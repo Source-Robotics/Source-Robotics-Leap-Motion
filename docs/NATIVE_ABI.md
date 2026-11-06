@@ -1,3 +1,7 @@
+> Versioned historical evidence: this report describes the release or prototype
+> named below. For current status, see [b3 acceptance](B3_VALIDATION.md) and the
+> [documentation index](README.md).
+
 **Native backend verification - 5 November 2026**
 
 The native backend uses `ctypes.WinDLL` for the Windows `LEAP_CALL` calling convention,

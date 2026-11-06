@@ -1,3 +1,6 @@
+> Historical Python 3.8 binding README. These instructions are preserved for
+> reference; current package installation is in the [README](../README.md).
+
 <h1 class="code-line" data-line-start=0 data-line-end=1 ><a id="LeapMotionPython38_0"></a>Leap-Motion-Python-3.8</h1>
 <p class="has-line-data" data-line-start="1" data-line-end="4">The leap motion sdk(v3.2) recompiled for python 3.8.<br>
 Just put all of these file in your project folder and it shoud work !<br>

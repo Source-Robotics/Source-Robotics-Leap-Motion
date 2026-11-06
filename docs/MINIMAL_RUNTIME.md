@@ -1,3 +1,7 @@
+> Versioned historical evidence: this report describes the release or prototype
+> named below. For current status, see [b3 acceptance](B3_VALIDATION.md) and the
+> [documentation index](README.md).
+
 **Local runtime prototype - alpha 0.1.0a3, 5 November 2026**
 
 The target is one Python-package installation that manages the essential tracking

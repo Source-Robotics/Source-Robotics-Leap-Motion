@@ -1,3 +1,7 @@
+> Versioned historical evidence: this report describes the release or prototype
+> named below. For current status, see [b3 acceptance](B3_VALIDATION.md) and the
+> [documentation index](README.md).
+
 **Original Leap Motion Controller - live validation, 5 November 2026**
 
 The first alpha was tested against the user's connected **Original Leap Motion
