@@ -86,11 +86,11 @@ class SimulatedReceiver:
                 self._receiver.close()
                 raise
 
-    def begin_session(self, session_id: str) -> None:
+    def begin_session(self, session_id: str, after_sequence: int) -> None:
         with self._lock:
             self._require_open()
             self._check_worker()
-            self._receiver.begin_session(session_id)
+            self._receiver.begin_session(session_id, after_sequence=after_sequence)
 
     def read_feedback(self) -> RobotFeedback:
         with self._lock:

@@ -114,12 +114,28 @@ def test_clutch_holds_and_explicit_resume_keeps_the_sequence_watermark():
     rx.hold("clutched", now=0.04)  # Repeating a hold is idempotent.
     assert rx.advance(now=8) == held
     assert not rx.accept(target(6), now=8)
-    rx.begin_session("one", now=8)
+    rx.begin_session("one", after_sequence=5, now=8)
     assert not rx.accept(target(5), now=8)
     assert rx.accept(target(6), now=8)
     rx.hold("hand_missing", now=8.01)
     with pytest.raises(ValueError, match="new session"):
         rx.begin_session("one", now=8.01)
+
+
+def test_resume_rejects_unseen_packets_sent_before_clutching():
+    rx = receiver()
+    rx.begin_session("one", now=0)
+    rx.accept(target(5), now=0)
+    rx.hold("clutched", now=0.03)
+    with pytest.raises(ValueError, match="watermark"):
+        rx.begin_session("one", now=0.04)
+    with pytest.raises(ValueError, match="watermark"):
+        rx.begin_session("one", after_sequence=4, now=0.04)
+    # The sender had produced commands through #10, even though only #5 arrived.
+    rx.begin_session("one", after_sequence=10, now=0.04)
+    assert not rx.accept(target(9), now=0.04)
+    assert not rx.accept(target(10), now=0.04)
+    assert rx.accept(target(11), now=0.04)
 
 
 def test_pose_only_updates_preserve_gripper_and_rotation_plans_without_refreshing_them():

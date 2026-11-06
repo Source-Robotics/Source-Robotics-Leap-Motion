@@ -249,33 +249,33 @@ def test_receiver_handshakes_follow_explicit_arm_and_completed_clutch_reanchor(s
         feedback=robot.read_feedback,
         open=robot.open,
         close=robot.close,
-        begin_session=sessions.append,
+        begin_session=lambda session, sequence: sessions.append((session, sequence)),
     )
     with Teleoperator(source, robot=adapter, config=config) as teleop:
         assert sessions == []
         teleop.arm()
         first = teleop.status.session_id
-        assert sessions == [first]
+        assert sessions == [(first, 0)]
         teleop.step()
         sent = robot.targets_sent
         teleop.clutch()
         teleop.release_clutch()
-        assert sessions == [first]
+        assert sessions == [(first, 0)]
         assert teleop.step() is None
-        assert sessions == [first, first]
+        assert sessions == [(first, 0), (first, sent)]
         assert robot.targets_sent == sent
         teleop.step()
         source.events.append(Frame(100, 200_000, ()))
         teleop.step()
         assert teleop.status.state == "tracking_lost"
         teleop.arm()
-        assert len(sessions) == 3 and sessions[-1] != first
+        assert len(sessions) == 3 and sessions[-1][0] != first and sessions[-1][1] == 0
 
 
 def test_failed_receiver_handshake_holds_and_latches_adapter_fault(setup):
     source, config, robot = setup
 
-    def fail(session):
+    def fail(session, sequence):
         raise OSError("receiver refused session")
 
     adapter = CallbackAdapter(

@@ -83,7 +83,9 @@ an optional `now=` value from one monotonic clock for deterministic tests/replay
   or rotation command valid indefinitely.
 - Stream expiry latches. Ordinary packets cannot rearm it. A new explicit session is
   required. A deliberate clutch hold/resume can retain its session and sequence
-  watermark; other holds require a new session.
+  watermark; the resume handshake supplies the sender's last produced sequence,
+  rejecting even unseen packets delayed from before the clutch. Other holds require
+  a new session.
 - Invalid/regressed receiver time latches a fault; close/reopen is required.
 
 The [expiry example](../examples/receiver_expiry.py) demonstrates this using explicit
@@ -126,10 +128,13 @@ with Tracker.demo(mode="latest", max_frame_age=config.max_frame_age) as tracker:
 ```
 
 Session-aware adapters declare `RobotCapabilities.command_sessions=True` and implement
-`begin_session(session_id)`. `Teleoperator` calls it after explicit arm calibration
+`begin_session(session_id, after_sequence)`. `Teleoperator` calls it after explicit arm calibration
 and after a requested clutch resume has received a fresh re-anchor frame. Existing
 adapters default to `False` and keep their previous lifecycle.
 `CallbackAdapter(..., begin_session=callback)` wraps this optional handshake.
+The pure receiver accepts the watermark as the keyword `after_sequence=`; initial
+calibration defaults to zero. A resumed sender must supply its current sequence,
+which must not be lower than the receiver's accepted sequence.
 
 This receiver supplies simulation and an integration boundary, not a network protocol
 or hardware controller. A physical integration must run expiry/hold where it can

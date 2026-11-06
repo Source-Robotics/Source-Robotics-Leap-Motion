@@ -165,20 +165,29 @@ class CartesianReceiver:
             self._state, self._reason = "expired", "command_expired"
         return self._feedback
 
-    def begin_session(self, session_id: str, *, now: float | None = None) -> None:
+    def begin_session(
+        self, session_id: str, *, after_sequence: int | None = None, now: float | None = None
+    ) -> None:
         self.advance(now=now)
         if not isinstance(session_id, str) or not session_id or len(session_id) > 128:
             raise ValueError("Session ID must be a non-empty string of at most 128 characters")
         if self._state in ("fault", "closed"):
             raise ValueError("Reopen the receiver after fault or close")
         same = session_id == self._session
+        if after_sequence is None:
+            if same:
+                raise ValueError("Resume requires the sender's sequence watermark")
+            after_sequence = 0
+        if type(after_sequence) is not int or after_sequence < 0:
+            raise ValueError("Session sequence watermark must be a non-negative integer")
         if same and not self._resume_allowed:
             raise ValueError("Use a new session after disarming or command expiry")
         if self._state in ("armed", "active"):
             raise ValueError("Hold the current receiver session before starting another")
+        if same and after_sequence < self._sequence:
+            raise ValueError("Session sequence watermark must not move backwards")
         self._cancel()
-        if not same:
-            self._sequence = 0
+        self._sequence = after_sequence
         self._session = session_id
         self._received = None
         self._resume_allowed = False

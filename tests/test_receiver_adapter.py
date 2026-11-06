@@ -34,7 +34,7 @@ def test_constructor_is_idle_and_worker_expires_while_the_sender_is_not_calling_
     rx.open()
     try:
         assert rx.worker_alive
-        rx.begin_session("one")
+        rx.begin_session("one", 0)
         rx.send(PoseTarget(Vector3(1, 0, 0), None, None, "one", 1, 1, 1, "camera", 0.03))
         # Inspect cached status directly: polling must not perform the watchdog work.
         deadline = time.monotonic() + 2
@@ -75,7 +75,7 @@ def test_failed_worker_is_reported_and_even_failed_close_joins_it(monkeypatch):
 def test_reopening_starts_a_new_idle_receiver_and_does_not_replay_targets():
     rx = robot()
     rx.open()
-    rx.begin_session("one")
+    rx.begin_session("one", 0)
     rx.close()
     rx.open()
     try:

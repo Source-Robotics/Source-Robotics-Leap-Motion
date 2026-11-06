@@ -114,7 +114,7 @@ class Teleoperator:
             raise TeleoperationError("Calibration requires tracking that is currently streaming")
         self.controller.arm(frame, reference, frame_age=health.last_frame_age_s or 0.0)
         if self.robot.capabilities.command_sessions:
-            self._call("begin_session", self.status.session_id)
+            self._call("begin_session", self.status.session_id, self.status.sequence)
 
     def disarm(self) -> None:
         self._require_open()
@@ -175,7 +175,7 @@ class Teleoperator:
             self._call("hold", self.status.reason)
         if before == "clutched" and self.status.state == "active":
             if self.robot.capabilities.command_sessions:
-                self._call("begin_session", self.status.session_id)
+                self._call("begin_session", self.status.session_id, self.status.sequence)
         if target is not None:
             self._call("send", target)
         return target

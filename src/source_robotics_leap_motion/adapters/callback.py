@@ -17,7 +17,7 @@ class CallbackAdapter:
         close: Callable[[], None] | None = None,
         orientation: bool = False,
         gripper: bool = False,
-        begin_session: Callable[[str], None] | None = None,
+        begin_session: Callable[[str, int], None] | None = None,
     ) -> None:
         self.capabilities = RobotCapabilities(
             orientation=orientation,
@@ -42,10 +42,10 @@ class CallbackAdapter:
         self._require_open()
         return None if self._feedback is None else self._feedback()
 
-    def begin_session(self, session_id: str) -> None:
+    def begin_session(self, session_id: str, after_sequence: int) -> None:
         self._require_open()
         if self._begin_session is not None:
-            self._begin_session(session_id)
+            self._begin_session(session_id, after_sequence)
 
     def send(self, target: PoseTarget) -> None:
         self._require_open()
