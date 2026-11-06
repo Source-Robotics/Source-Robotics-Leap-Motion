@@ -29,6 +29,8 @@ jobs:
       - run: source-leap --demo --frames 3 --json
       - run: source-leap --demo --latest --health --frames 3 --json
       - run: source-leap teleop --demo --headless --auto-arm --frames 3 --json
+      - run: source-leap teleop --demo --interpolate --headless --auto-arm --frames 3 --json
+      - run: python examples/receiver_expiry.py
   build:
     runs-on: ubuntu-latest
     steps:

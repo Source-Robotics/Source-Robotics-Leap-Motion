@@ -123,6 +123,7 @@ health counters, configurable Cartesian control, and callback adapters for robot
 - [User guides and documentation index](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/README.md)
 - [Python API, recording, and mapping](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/USAGE.md)
 - [Robot adapters and teleoperation](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/TELEOPERATION.md)
+- [Interpolated receiver and gripper filtering (b4)](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/RECEIVER.md)
 - [Compatibility and measured validation](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/B3_VALIDATION.md)
 - [Contributing and development setup](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/CONTRIBUTING.md)
 

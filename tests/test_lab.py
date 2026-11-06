@@ -27,6 +27,31 @@ def test_headless_demo_can_explicitly_arm_simulation(capsys):
     assert states[-1]["control"]["sequence"] > 0
 
 
+def test_headless_demo_can_use_the_interpolating_receiver_and_closes_its_worker(capsys):
+    import threading
+
+    assert (
+        main(
+            [
+                "teleop",
+                "--demo",
+                "--interpolate",
+                "--headless",
+                "--auto-arm",
+                "--json",
+                "--frames",
+                "3",
+            ]
+        )
+        == 0
+    )
+    states = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
+    assert len(states) == 3
+    assert states[-1]["receiver"]["accepted_commands"] > 0
+    assert states[-1]["receiver"]["session_id"] == states[-1]["control"]["session_id"]
+    assert not any(t.name == "source-leap-receiver" for t in threading.enumerate())
+
+
 def test_lab_server_serves_packaged_viewer_and_authenticated_bounded_actions():
     server = LabServer()
     with server:

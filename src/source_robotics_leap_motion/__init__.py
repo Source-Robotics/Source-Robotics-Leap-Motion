@@ -16,15 +16,17 @@ from .errors import (
 from .health import TrackingHealth
 from .mapping import Mapping
 from .models import Bone, Finger, Frame, Hand, Palm, Quaternion, Vector3
+from .receiver import CartesianReceiver, ReceiverConfig, ReceiverStatus
 from .recording import Recorder, read_recording
 from .teleoperation import Teleoperator
 from .tracker import Tracker
 
-__version__ = "0.1.0b3"
+__version__ = "0.1.0b4"
 
 __all__ = [
     "AdapterError",
     "Bone",
+    "CartesianReceiver",
     "ConnectionError",
     "Finger",
     "Frame",
@@ -37,6 +39,8 @@ __all__ = [
     "PoseTarget",
     "Quaternion",
     "Recorder",
+    "ReceiverConfig",
+    "ReceiverStatus",
     "RecordingError",
     "RuntimeNotFoundError",
     "RobotCapabilities",

@@ -10,6 +10,7 @@ live hardware evidence; clean-PC driver setup and Linux/macOS hardware remain pe
 | --- | --- |
 | [Python API and CLI](USAGE.md) | Hand data, units, recording/replay, mapping, and diagnostics |
 | [Teleoperation and adapters](TELEOPERATION.md) | Browser lab, calibration, clutch, limits, TOML, and controller callbacks |
+| [Interpolated receiver](RECEIVER.md) | Receiver-side timing/expiry, bounded interpolation, and independent gripper filtering in b4 |
 | [Latest frames and health](LATEST_FRAMES.md) | Slow consumers, freshness, skipped frames, and health semantics |
 | [Installation and platforms](INSTALLATION_PLATFORMS.md) | Supported setup paths and platform limitations |
 | [Runtime setup](RUNTIME.md) | Automatic download/cache, driver prompts, offline setup, and private engines |

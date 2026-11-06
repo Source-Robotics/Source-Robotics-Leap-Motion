@@ -28,3 +28,7 @@ open_value = 1.0
 closed_value = 0.0
 max_speed = 1.0                # normalized units/second
 deadband = 0.01
+# Optional: independent gripper responsiveness and update cap.
+# Omit both to inherit pose smoothing and emit on every pose command.
+smoothing_time_constant = 0.12
+max_output_hz = 30.0

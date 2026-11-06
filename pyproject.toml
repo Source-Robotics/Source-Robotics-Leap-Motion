@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "source-robotics-leap-motion"
-version = "0.1.0b3"
+version = "0.1.0b4"
 description = "Modern Leap Motion tracking and configurable robot-arm teleoperation primitives"
 readme = "README.md"
 requires-python = ">=3.10"

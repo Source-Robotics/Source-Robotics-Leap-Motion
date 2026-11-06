@@ -47,6 +47,8 @@ class GripperMapping:
     closed_value: float = 0.0
     max_speed: float = 1.0
     deadband: float = 0.01
+    smoothing_time_constant: float | None = None
+    max_output_hz: float | None = None
 
     def __post_init__(self) -> None:
         if self.source not in ("grab", "pinch"):
@@ -57,6 +59,12 @@ class GripperMapping:
             if value > 1:
                 raise ValueError(f"{name} must be in [0, 1]")
         _number(self.max_speed, "Gripper max_speed")
+        if self.smoothing_time_constant is not None:
+            _number(self.smoothing_time_constant, "Gripper smoothing_time_constant", zero=True)
+        if self.max_output_hz is not None:
+            _number(self.max_output_hz, "Gripper max_output_hz")
+            if self.max_output_hz > 1000:
+                raise ValueError("Gripper max_output_hz must not exceed 1000")
 
     def map(self, strength: float) -> float:
         return self.open_value + (self.closed_value - self.open_value) * strength
@@ -97,6 +105,12 @@ class TeleoperationConfig:
             raise ValueError("max_output_hz must not exceed 1000")
         if self.max_frame_age > self.tracking_timeout:
             raise ValueError("max_frame_age must not exceed tracking_timeout")
+        if (
+            self.gripper is not None
+            and self.gripper.max_output_hz is not None
+            and self.gripper.max_output_hz > self.max_output_hz
+        ):
+            raise ValueError("Gripper max_output_hz must not exceed teleoperation.max_output_hz")
 
     @classmethod
     def from_toml(cls, path: str | Path) -> TeleoperationConfig:

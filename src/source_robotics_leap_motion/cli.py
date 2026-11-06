@@ -110,6 +110,11 @@ def _parser() -> argparse.ArgumentParser:
     lab.add_argument("--demo", action="store_true", help="use a synthetic hand")
     lab.add_argument("--replay", help="use a recorded hand session at recorded speed")
     lab.add_argument("--config", help="teleoperation TOML with workspace and speed limits")
+    lab.add_argument(
+        "--interpolate",
+        action="store_true",
+        help="use the simulated receiver with interpolation and independent command expiry",
+    )
     lab.add_argument("--headless", action="store_true", help="run without the browser viewer")
     lab.add_argument(
         "--auto-arm", action="store_true", help="automatically calibrate the simulated arm once"

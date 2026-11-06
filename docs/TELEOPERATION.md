@@ -11,8 +11,9 @@ and needs no web framework, numerical toolbox, robot SDK, or JavaScript build st
 ```
 
 The first command uses a synthetic hand. The second uses the Leap controller. Both
-send targets exclusively to `SimulatedArm`, which supplies immediate Cartesian
-feedback. The viewer shows a workspace, tool position/orientation, recent path,
+send targets to simulated output. `SimulatedArm` supplies immediate Cartesian
+feedback. Add `--interpolate` for the optional [simulated receiver](RECEIVER.md),
+with its own interpolation and command-expiry loop. The viewer shows a workspace, tool position/orientation, recent path,
 normalized gripper openness, frame rate, and local tracking age. It is a target
 visualizer, with no robot joint geometry, inverse kinematics, collisions, or dynamics.
 
@@ -54,6 +55,11 @@ and must cancel or hold motion through that controller's interface. `feedback` r
 reference to `arm(reference)` and `release_clutch(reference)`. Orientation/gripper
 capabilities default to false and must be declared when implemented. Unsupported
 configured commands are rejected before opening the adapter.
+
+Gripper smoothing and its output-rate cap can be set independently in `[gripper]`;
+see [gripper filtering and timing](RECEIVER.md#independent-gripper-filtering).
+Session-aware receivers add an explicit `begin_session` handshake on arm and after
+fresh clutch re-anchoring; existing adapters keep their previous lifecycle.
 
 The runnable [callback example](../examples/custom_robot.py) wraps the simulated
 controller through these exact callbacks. Replacing that boundary is the integration

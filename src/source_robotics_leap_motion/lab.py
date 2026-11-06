@@ -1,4 +1,4 @@
-"""Loopback-only browser lab. Its only output adapter is SimulatedArm."""
+"""Loopback-only browser lab with exclusively simulated output adapters."""
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ from dataclasses import asdict
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+from .adapters.receiver import SimulatedReceiver
 from .adapters.simulated import SimulatedArm
 from .backends.replay import ReplayBackend
 from .control_config import GripperMapping, TeleoperationConfig, Workspace
@@ -22,6 +23,7 @@ from .control_models import Pose
 from .errors import TeleoperationError, TrackingTimeoutError
 from .mapping import Mapping
 from .models import Vector3
+from .receiver import ReceiverConfig
 from .teleoperation import Teleoperator
 from .tracker import Tracker
 
@@ -154,7 +156,9 @@ class LabServer:
         self._thread.join(2)
 
 
-def snapshot(teleop: Teleoperator, robot: SimulatedArm, source: str, message: str) -> dict:
+def snapshot(
+    teleop: Teleoperator, robot: SimulatedArm | SimulatedReceiver, source: str, message: str
+) -> dict:
     status = teleop.status
     hand = (
         None
@@ -178,6 +182,7 @@ def snapshot(teleop: Teleoperator, robot: SimulatedArm, source: str, message: st
         "handedness": teleop.config.handedness,
         "hand": None if hand is None else {"id": hand.id, "position": asdict(hand.palm.position)},
         "robot": asdict(robot.read_feedback()),
+        "receiver": asdict(robot.receiver_status) if isinstance(robot, SimulatedReceiver) else None,
         "control": asdict(status),
         "tracking": teleop.tracker.health.to_dict(),
         "config": asdict(teleop.config),
@@ -213,7 +218,21 @@ def run_lab(args) -> int:
         )
         source = "Leap controller"
     center = (config.workspace.minimum + config.workspace.maximum) * 0.5
-    robot = SimulatedArm(Pose(center))
+    robot = (
+        SimulatedReceiver(
+            Pose(center),
+            config=ReceiverConfig(
+                workspace=config.workspace,
+                max_linear_speed=config.max_linear_speed,
+                max_angular_speed=config.max_angular_speed,
+                max_gripper_speed=1.0 if config.gripper is None else config.gripper.max_speed,
+                interpolation_time=min(0.04, config.tracking_timeout),
+                command_timeout=config.tracking_timeout,
+            ),
+        )
+        if args.interpolate
+        else SimulatedArm(Pose(center))
+    )
     server = None if args.headless else LabServer(args.port)
     auto_pending = args.auto_arm
     processed = 0
