@@ -17,12 +17,17 @@ class CallbackAdapter:
         close: Callable[[], None] | None = None,
         orientation: bool = False,
         gripper: bool = False,
+        begin_session: Callable[[str, int], None] | None = None,
     ) -> None:
         self.capabilities = RobotCapabilities(
-            orientation=orientation, gripper=gripper, feedback=feedback is not None
+            orientation=orientation,
+            gripper=gripper,
+            feedback=feedback is not None,
+            command_sessions=begin_session is not None,
         )
         self._send, self._hold, self._feedback = send, hold, feedback
         self._open, self._close = open, close
+        self._begin_session = begin_session
         self._opened = False
 
     def open(self) -> None:
@@ -36,6 +41,11 @@ class CallbackAdapter:
     def read_feedback(self) -> RobotFeedback | None:
         self._require_open()
         return None if self._feedback is None else self._feedback()
+
+    def begin_session(self, session_id: str, after_sequence: int) -> None:
+        self._require_open()
+        if self._begin_session is not None:
+            self._begin_session(session_id, after_sequence)
 
     def send(self, target: PoseTarget) -> None:
         self._require_open()

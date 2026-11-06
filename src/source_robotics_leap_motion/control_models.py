@@ -53,3 +53,4 @@ class RobotCapabilities:
     orientation: bool = False
     gripper: bool = False
     feedback: bool = False
+    command_sessions: bool = False

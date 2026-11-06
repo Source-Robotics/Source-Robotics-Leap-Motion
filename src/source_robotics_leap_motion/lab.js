@@ -107,6 +107,9 @@ function update() {
   $("connection").textContent = "Local session";
   $("connection-dot").className = "dot on";
   $("source").textContent = d.source;
+  $("receiver-status").textContent = d.receiver
+    ? `Interpolated receiver: ${d.receiver.state} · ${d.receiver.accepted_commands} commands`
+    : "Immediate simulated feedback";
   $("hand-label").textContent = d.hand
     ? `${d.handedness} hand · #${d.hand.id}`
     : `No ${d.handedness} hand visible`;

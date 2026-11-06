@@ -1,7 +1,8 @@
 # Documentation
 
 Start with [installation and the two Windows setup paths](../README.md#install-and-run-on-windows).
-The current public package is **0.1.0b3**. Windows tracking and simulated output have
+Package versions are listed on [PyPI](https://pypi.org/project/source-robotics-leap-motion/).
+Windows tracking and simulated output have
 live hardware evidence; clean-PC driver setup and Linux/macOS hardware remain pending.
 
 ## Using the package
@@ -10,6 +11,7 @@ live hardware evidence; clean-PC driver setup and Linux/macOS hardware remain pe
 | --- | --- |
 | [Python API and CLI](USAGE.md) | Hand data, units, recording/replay, mapping, and diagnostics |
 | [Teleoperation and adapters](TELEOPERATION.md) | Browser lab, calibration, clutch, limits, TOML, and controller callbacks |
+| [Interpolated receiver](RECEIVER.md) | Receiver-side timing/expiry, bounded interpolation, and independent gripper filtering in b4 |
 | [Latest frames and health](LATEST_FRAMES.md) | Slow consumers, freshness, skipped frames, and health semantics |
 | [Installation and platforms](INSTALLATION_PLATFORMS.md) | Supported setup paths and platform limitations |
 | [Runtime setup](RUNTIME.md) | Automatic download/cache, driver prompts, offline setup, and private engines |
@@ -33,7 +35,8 @@ CI does not establish USB/controller support on an untested operating system.
 
 | Report | Scope |
 | --- | --- |
-| [b3 acceptance](B3_VALIDATION.md) | Current live-hand behavior, 20-minute soak, Python matrix, and remaining checks |
+| [b4 receiver validation](B4_VALIDATION.md) | Installed-wheel matrix, independent gripper filtering, interpolation/expiry, and recorded-hand receiver replay |
+| [b3 acceptance](B3_VALIDATION.md) | Live-hand behavior, 20-minute camera soak, Python matrix, and remaining hardware checks |
 | [Clean Windows checklist](CLEAN_MACHINE_CHECK.md) | Procedure for a PC without an existing Leap installation; still pending |
 | [b1 runtime validation](BETA_VALIDATION.md) | Earlier delivery, caching, shared leases, restart, and crash cleanup |
 | [Compatibility and performance](COMPATIBILITY_PERFORMANCE.md) | Earlier Python-version checks and old-SDK comparison measurements |

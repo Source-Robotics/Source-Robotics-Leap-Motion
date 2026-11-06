@@ -27,6 +27,7 @@ flowchart LR
 | `mapping.py`, `_geometry.py` | Coordinate transforms and quaternion operations |
 | `control.py`, `control_config.py`, `control_models.py` | Pure control state machine, strict configuration, poses, commands, and feedback |
 | `teleoperation.py`, `adapters/` | Synchronous control/adapter integration, callback adapter, and simulated arm |
+| `receiver.py`, `adapters/receiver.py` | Transport-independent interpolation/expiry state machine and optional simulated receiver worker |
 | `runtime*.py`, `delivery.py`, `setup.py`, `_broker.py` | Discovery, pinned delivery/cache, explicit device setup, and shared runtime ownership |
 | `cli.py`, `lab.py`, `lab.html`, `lab.js`, `lab.css` | Console entry point and packaged loopback browser lab |
 
@@ -57,6 +58,9 @@ drivers, or an SDK-specific network receiver. A controller integration provides 
 where needed and enforces command expiry/hold at the receiving controller.
 
 See [teleoperation](TELEOPERATION.md) for states, ownership, and adapter callbacks.
+The optional [receiver](RECEIVER.md) advances independently of incoming commands,
+rejects old-session/duplicate packets, and latches command expiry using its own clock.
+It provides bounded simulated feedback, not a physical robot watchdog or network transport.
 
 ## Runtime ownership
 

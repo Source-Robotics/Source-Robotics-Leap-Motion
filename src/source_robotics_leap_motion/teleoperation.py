@@ -55,6 +55,10 @@ class Teleoperator:
             raise TeleoperationError("Adapter does not support configured orientation control")
         if self.config.gripper is not None and not capabilities.gripper:
             raise TeleoperationError("Adapter does not support configured gripper control")
+        if capabilities.command_sessions and not callable(
+            getattr(self.robot, "begin_session", None)
+        ):
+            raise TeleoperationError("Session-aware adapter must implement begin_session")
         self.controller = TeleoperationController(self.config)
         self._disconnected = False
         self.last_frame = None
@@ -80,7 +84,7 @@ class Teleoperator:
         except Exception as error:
             self.controller.fault(f"adapter_{operation}_failed")
             extra = ""
-            if operation in ("send", "read_feedback"):
+            if operation in ("send", "read_feedback", "begin_session"):
                 try:
                     self.robot.hold("adapter_fault")
                 except Exception as hold_error:
@@ -109,6 +113,8 @@ class Teleoperator:
         if health.status != "streaming":
             raise TeleoperationError("Calibration requires tracking that is currently streaming")
         self.controller.arm(frame, reference, frame_age=health.last_frame_age_s or 0.0)
+        if self.robot.capabilities.command_sessions:
+            self._call("begin_session", self.status.session_id, self.status.sequence)
 
     def disarm(self) -> None:
         self._require_open()
@@ -167,6 +173,9 @@ class Teleoperator:
             raise
         if before in ("active", "clutched") and self.status.state == "tracking_lost":
             self._call("hold", self.status.reason)
+        if before == "clutched" and self.status.state == "active":
+            if self.robot.capabilities.command_sessions:
+                self._call("begin_session", self.status.session_id, self.status.sequence)
         if target is not None:
             self._call("send", target)
         return target

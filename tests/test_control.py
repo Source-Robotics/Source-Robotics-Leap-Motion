@@ -223,6 +223,58 @@ def test_gripper_mapping_limits_speed_and_holds_during_clutch():
     assert controller.status.last_target.gripper == pytest.approx(0.95)
 
 
+def test_gripper_smoothing_is_independent_of_position_smoothing():
+    controller = armed(
+        smoothing_time_constant=0,
+        gripper=GripperMapping(smoothing_time_constant=1, max_speed=100, deadband=0),
+    )
+    target = controller.update(frame(1, Vector3(0.1, 0, 0), grab=1), now=0.1)
+    assert target.position.x == pytest.approx(0.1)
+    assert target.gripper == pytest.approx(math.exp(-0.1))
+
+
+def test_gripper_defaults_inherit_pose_smoothing_and_emit_on_each_pose_command():
+    controller = armed(
+        smoothing_time_constant=1,
+        gripper=GripperMapping(max_speed=100, deadband=0),
+    )
+    target = controller.update(frame(1, Vector3(1, 0, 0), grab=1), now=0.1)
+    assert target.position.x == pytest.approx(1 - math.exp(-0.1))
+    assert target.gripper == pytest.approx(math.exp(-0.1))
+
+
+def test_slower_gripper_rate_does_not_slow_pose_updates_or_bypass_gripper_speed_limits():
+    controller = armed(
+        max_output_hz=100,
+        gripper=GripperMapping(max_output_hz=20, max_speed=0.5, deadband=0),
+    )
+    outputs = []
+    for index in range(1, 11):
+        target = controller.update(
+            frame(index, Vector3(index / 100, 0, 0), grab=1, timestamp=index * 10_000),
+            now=index / 100,
+        )
+        assert target is not None
+        if target.gripper is not None:
+            outputs.append((index, target.gripper))
+    assert outputs == [(5, pytest.approx(0.975)), (10, pytest.approx(0.95))]
+    assert controller.status.sequence == 10
+
+
+def test_clutch_reanchor_resets_gripper_timing_and_reference():
+    controller = armed(
+        tracking_timeout=2,
+        gripper=GripperMapping(max_output_hz=20, max_speed=0.5, deadband=0),
+    )
+    controller.update(frame(1, grab=1), now=0.1)
+    controller.clutch()
+    controller.update(frame(2), now=0.2)
+    controller.release_clutch(RobotFeedback(Pose(Vector3()), 0.5))
+    assert controller.update(frame(3), now=0.7) is None
+    assert controller.update(frame(4), now=0.71).gripper is None
+    assert controller.update(frame(5), now=0.75).gripper == pytest.approx(0.525)
+
+
 def test_output_frequency_is_a_cap_and_skipped_inputs_still_refresh_tracking():
     controller = armed(max_output_hz=10)
     for index in range(1, 10):

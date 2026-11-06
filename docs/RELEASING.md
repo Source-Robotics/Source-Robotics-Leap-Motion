@@ -1,7 +1,7 @@
 # Releasing
 
-Package and runtime releases have separate versions. The published Python package
-is **0.1.0b3**; it reuses the pinned Windows 3.2.1 runtime hosted with **v0.1.0b1**.
+Package and runtime releases have separate versions. Python package versions b3 and
+b4 reuse the pinned Windows 3.2.1 runtime hosted with **v0.1.0b1**.
 A package or documentation change does not require regenerating the native archive.
 Published wheel/sdist/runtime files are immutable: use a new version for changed bytes.
 

@@ -31,7 +31,17 @@ def test_workspace_rejects_inverted_bounds():
 
 @pytest.mark.parametrize(
     "settings",
-    [{"source": "fist"}, {"max_speed": 0}, {"open_value": 1.1}, {"closed_value": float("nan")}],
+    [
+        {"source": "fist"},
+        {"max_speed": 0},
+        {"open_value": 1.1},
+        {"closed_value": float("nan")},
+        {"smoothing_time_constant": -1},
+        {"smoothing_time_constant": True},
+        {"max_output_hz": 0},
+        {"max_output_hz": float("inf")},
+        {"max_output_hz": 1001},
+    ],
 )
 def test_invalid_gripper_settings(settings):
     with pytest.raises(ValueError):
@@ -51,12 +61,28 @@ max_linear_speed = 0.2
 control_orientation = true
 [gripper]
 source = "pinch"
+smoothing_time_constant = 0.2
+max_output_hz = 20
 """
     path.write_text(text, encoding="utf-8")
     config = TeleoperationConfig.from_toml(path)
     assert config.mapping.axes == ("-z", "-x", "y")
     assert config.gripper.source == "pinch"
     assert config.control_orientation
+    assert config.gripper.smoothing_time_constant == 0.2
+    assert config.gripper.max_output_hz == 20
     path.write_text(text.replace("max_linear_speed", "max_linear_speeed"), encoding="utf-8")
     with pytest.raises(ValueError, match="max_linear_speed"):
         TeleoperationConfig.from_toml(path)
+
+
+def test_gripper_frequency_cannot_exceed_the_total_command_cap():
+    from source_robotics_leap_motion import GripperMapping
+
+    with pytest.raises(ValueError, match="teleoperation.max_output_hz"):
+        TeleoperationConfig(
+            Workspace(Vector3(), Vector3(1, 1, 1)),
+            1,
+            max_output_hz=30,
+            gripper=GripperMapping(max_output_hz=60),
+        )

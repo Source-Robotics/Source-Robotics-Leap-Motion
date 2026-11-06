@@ -238,3 +238,67 @@ def test_close_releases_adapter_even_when_hold_fails(setup):
     with pytest.raises(AdapterError, match="Hold failed"):
         manager.close()
     assert not robot._opened
+
+
+def test_receiver_handshakes_follow_explicit_arm_and_completed_clutch_reanchor(setup):
+    source, config, robot = setup
+    sessions = []
+    adapter = CallbackAdapter(
+        robot.send,
+        hold=robot.hold,
+        feedback=robot.read_feedback,
+        open=robot.open,
+        close=robot.close,
+        begin_session=lambda session, sequence: sessions.append((session, sequence)),
+    )
+    with Teleoperator(source, robot=adapter, config=config) as teleop:
+        assert sessions == []
+        teleop.arm()
+        first = teleop.status.session_id
+        assert sessions == [(first, 0)]
+        teleop.step()
+        sent = robot.targets_sent
+        teleop.clutch()
+        teleop.release_clutch()
+        assert sessions == [(first, 0)]
+        assert teleop.step() is None
+        assert sessions == [(first, 0), (first, sent)]
+        assert robot.targets_sent == sent
+        teleop.step()
+        source.events.append(Frame(100, 200_000, ()))
+        teleop.step()
+        assert teleop.status.state == "tracking_lost"
+        teleop.arm()
+        assert len(sessions) == 3 and sessions[-1][0] != first and sessions[-1][1] == 0
+
+
+def test_failed_receiver_handshake_holds_and_latches_adapter_fault(setup):
+    source, config, robot = setup
+
+    def fail(session, sequence):
+        raise OSError("receiver refused session")
+
+    adapter = CallbackAdapter(
+        robot.send,
+        hold=robot.hold,
+        feedback=robot.read_feedback,
+        open=robot.open,
+        close=robot.close,
+        begin_session=fail,
+    )
+    with Teleoperator(source, robot=adapter, config=config) as teleop:
+        with pytest.raises(AdapterError, match="refused session") as error:
+            teleop.arm()
+        assert isinstance(error.value.__cause__, OSError)
+        assert teleop.status.state == "fault"
+        assert robot.hold_reason == "adapter_fault"
+        assert robot.targets_sent == 0
+
+
+def test_missing_session_handshake_is_rejected_before_open(setup):
+    source, config, robot = setup
+    robot.capabilities = RobotCapabilities(feedback=True, command_sessions=True)
+    with pytest.raises(TeleoperationError, match="begin_session"):
+        with Teleoperator(source, robot=robot, config=config):
+            pass
+    assert not robot._opened

@@ -8,7 +8,7 @@ A Python package for the **Original Leap Motion Controller**. Read hand skeleton
 record and replay motion, and map hand movement to a simulator or your own robot
 controller through configurable adapters.
 
-**Status:** [0.1.0b3 is published on PyPI](https://pypi.org/project/source-robotics-leap-motion/).
+**Status:** [Published Windows beta on PyPI](https://pypi.org/project/source-robotics-leap-motion/).
 Windows tracking and the simulated robot workflow have passed live-controller tests.
 Clean-PC driver installation and Linux/macOS controller hardware tests are still pending.
 
@@ -123,7 +123,8 @@ health counters, configurable Cartesian control, and callback adapters for robot
 - [User guides and documentation index](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/README.md)
 - [Python API, recording, and mapping](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/USAGE.md)
 - [Robot adapters and teleoperation](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/TELEOPERATION.md)
-- [Compatibility and measured validation](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/B3_VALIDATION.md)
+- [Interpolated receiver and gripper filtering (b4)](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/RECEIVER.md)
+- [Compatibility and measured validation](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/B4_VALIDATION.md)
 - [Contributing and development setup](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/CONTRIBUTING.md)
 
 ## Repository layout

@@ -52,6 +52,7 @@ class TeleoperationController:
         self._last_frame: Frame | None = None
         self._last_valid_at: float | None = None
         self._last_output_at: float | None = None
+        self._last_gripper_at: float | None = None
         self._last_now: float | None = None
         self._resume: RobotFeedback | None = None
         self._workspace_limited = self._speed_limited = False
@@ -99,6 +100,7 @@ class TeleoperationController:
         self._pose = reference.pose
         self._gripper = reference.gripper
         self._last_output_at = now
+        self._last_gripper_at = now
         self._workspace_limited = self._speed_limited = False
 
     def arm(
@@ -253,23 +255,31 @@ class TeleoperationController:
             fraction = min(1.0, config.max_angular_speed * dt / distance) if distance > 0 else 1.0
             self._speed_limited |= fraction < 1
             orientation = slerp(orientation, smoothed, fraction)
-        if config.gripper is not None:
-            strength = (
-                hand.grab_strength if config.gripper.source == "grab" else hand.pinch_strength
-            )
-            goal = config.gripper.map(strength)
-            delta_grip = (goal - self._gripper) * alpha
-            if abs(goal - self._gripper) <= config.gripper.deadband:
+        gripper_output = None
+        grip = config.gripper
+        grip_dt = now - self._last_gripper_at
+        grip_hz = None if grip is None else grip.max_output_hz
+        if grip is not None and (grip_hz is None or grip_dt + 1e-12 >= 1 / grip_hz):
+            strength = hand.grab_strength if grip.source == "grab" else hand.pinch_strength
+            tau = grip.smoothing_time_constant
+            if tau is None:
+                tau = config.smoothing_time_constant
+            grip_alpha = 1.0 if tau == 0 else -math.expm1(-grip_dt / tau)
+            goal = grip.map(strength)
+            delta_grip = (goal - self._gripper) * grip_alpha
+            if abs(goal - self._gripper) <= grip.deadband:
                 delta_grip = 0.0
-            step = config.gripper.max_speed * dt
+            step = grip.max_speed * grip_dt
             self._gripper += max(-step, min(step, delta_grip))
+            gripper_output = self._gripper
+            self._last_gripper_at = now
         self._pose = Pose(position, orientation)
         self._sequence += 1
         self._last_output_at = now
         self._last_target = PoseTarget(
             position,
             orientation if config.control_orientation else None,
-            self._gripper if config.gripper is not None else None,
+            gripper_output,
             self._session,
             self._sequence,
             frame.id,
