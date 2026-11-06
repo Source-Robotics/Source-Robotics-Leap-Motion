@@ -44,7 +44,20 @@ packages = ["src/source_robotics_leap_motion"]
 exclude = ["**/*.dll", "**/*.pyd", "**/*.exe", "**/*.ldat", "**/runtime-manifest.json"]
 
 [tool.hatch.build.targets.sdist]
-include = ["/src", "/tests", "/examples", "/tools", "/docs", "/README.md", "/PACKAGE_DESIGN.md", "/LICENSE", "/pyproject.toml", "/.github"]
+include = [
+    "/src",
+    "/tests",
+    "/examples",
+    "/tools",
+    "/docs",
+    "/README.md",
+    "/CONTRIBUTING.md",
+    "/LICENSE",
+    "/pyproject.toml",
+    "/.github",
+    "/.gitattributes",
+    "/.editorconfig",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -56,4 +69,3 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
-

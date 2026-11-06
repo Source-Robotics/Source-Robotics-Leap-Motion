@@ -1,49 +1,46 @@
-**Release preparation for 0.1.0b1**
+# Releasing
 
-The source target is `Source-Robotics/Source-Robotics-Leap-Motion`. The owner explicitly
-approved making it public and publishing the beta. Keep future publication gated on
-anonymous availability of the pinned runtime asset. A draft release can be prepared
-first; publication makes its asset available to ordinary package users.
+Package and runtime releases have separate versions. The published Python package
+is **0.1.0b3**; it reuses the pinned Windows 3.2.1 runtime hosted with **v0.1.0b1**.
+A package or documentation change does not require regenerating the native archive.
+Published wheel/sdist/runtime files are immutable: use a new version for changed bytes.
 
-The local release outputs are:
+## Prepare a Python package release
 
-```text
-dist/source_robotics_leap_motion-0.1.0b1-py3-none-any.whl
-dist/source_robotics_leap_motion-0.1.0b1.tar.gz
-dist/runtime/source-leap-runtime-windows-x86_64-3.2.1.zip
-dist/runtime/runtime-descriptor.json
-dist/runtime/SHA256SUMS
-```
+1. Work on a branch. Set the new package version consistently in `pyproject.toml` and
+   `src/source_robotics_leap_motion/__init__.py`. Update current user documentation
+   and record the scope of validation.
+2. Run the checks in [CONTRIBUTING.md](../CONTRIBUTING.md) and review platform CI.
+   Hardware claims require the corresponding real-device evidence; hosted CI alone
+   is insufficient.
+3. Build into a fresh output directory, inspect the artifacts, and check metadata:
 
-The runtime asset contains the tested engine, model, firmware, VC++ support libraries,
-original USB INF/CAT files and dependencies, and notices. It excludes GUI programs,
-camera recordings, user configuration, certificates, and private keys. The Python
-wheel excludes all vendor executables, DLLs, and model files.
+   ```powershell
+   .\.venv\Scripts\python.exe -m pip install twine
+   .\.venv\Scripts\python.exe -m build
+   .\.venv\Scripts\python.exe -m twine check dist/*
+   .\.venv\Scripts\python.exe tools/check_release.py
+   ```
 
-To regenerate assets from the locally cleared runtime:
+   `check_release.py` checks the public runtime size and the wheel's contents.
+   `--offline` skips the network check. Setup verifies the full pinned runtime hash;
+   the release HEAD request is not a replacement for that verification.
+4. Install the exact candidate wheel in a fresh venv. Check dependencies, imports,
+   the controller-free demo, and packaged viewer assets. Check live tracking when
+   the release changes hardware/runtime behavior.
+5. Merge the reviewed change and tag the corresponding source. Create the GitHub
+   release with that version's exact tested wheel/sdist and SHA-256 checksums.
+   Record the commit and artifact identities. Preserve any existing runtime pin
+   unless this release deliberately changes the runtime.
 
-```powershell
-.\.venv\Scripts\python.exe tools\build_runtime_release.py .tools\private-runtime-321 --output dist\runtime --drivers "C:\Program Files (x86)\Leap Motion\Core Services\Drivers" --notice docs\VENDOR_NOTICE.txt
-.\.venv\Scripts\python.exe tools\configure_release.py https://github.com/Source-Robotics/Source-Robotics-Leap-Motion --tag v0.1.0b1
-.\.venv\Scripts\python.exe -m build --no-isolation
-```
+The wheel must contain the package, viewer assets, `py.typed`, and runtime catalog.
+It must exclude native vendor executables/DLLs/models, local recordings, credentials,
+and `.tools/`/`.venv/`. The sdist includes maintained source, tests, examples, docs,
+contributor instructions, and release utilities.
 
-The configured catalog pins the exact archive bytes. Regenerating the ZIP can change
-its hash; rerun configuration and rebuild the wheel whenever the archive changes.
-Upload the runtime ZIP under its exact filename to the `v0.1.0b1` GitHub release.
+## Publish those artifacts to PyPI
 
-After the runtime is publicly accessible:
-
-```powershell
-.\.venv\Scripts\python.exe tools\check_release.py
-```
-
-This verifies the public asset size and the Python wheel's contents. Runtime downloads
-also verify the full pinned hash during setup; the release HEAD check alone is not
-the authenticity check. Test a clean-machine first launch before declaring the
-driver-only setup verified.
-
-For PyPI, configure a Trusted Publisher for:
+The project uses GitHub Trusted Publishing with these registered fields:
 
 ```text
 Project: source-robotics-leap-motion
@@ -53,13 +50,35 @@ Workflow: publish.yml
 Environment: pypi
 ```
 
-No long-lived PyPI token is required by the prepared workflow. The PyPI account owner
-must authorize the publisher (a pending publisher can create the first project).
-The manually triggered publication workflow runs tests, downloads the exact existing
-GitHub release wheel/sdist, verifies their GitHub SHA-256 digests, checks metadata and
-public runtime availability, then publishes those same bytes through OIDC.
-[PyPI Trusted Publishing](https://docs.pypi.org/trusted-publishers/using-a-publisher/)
+Run the manually dispatched [publish workflow](../.github/workflows/publish.yml) with
+the exact existing release tag. It runs tests, downloads the GitHub wheel/sdist,
+verifies GitHub's SHA-256 digests, checks metadata and runtime availability, and
+uploads those same bytes through OIDC. No long-lived PyPI token is required.
 
-The CI workflow tests installed packages on Windows/Linux/macOS. Hosted runners have
-no Leap controller: passing CI verifies software behavior and layout, not device
-support on every platform. Keep hardware results separate in the validation report.
+After publication, verify the version-specific PyPI JSON/file digests against
+GitHub and the tested local files. Test installation by package name in a fresh
+venv and an upgrade from the preceding release. Check the actual installed version:
+public indexes/caches can briefly show the preceding release immediately after upload.
+
+See [PyPI Trusted Publishing](https://docs.pypi.org/trusted-publishers/using-a-publisher/)
+for publisher administration. A normal documentation cleanup does not dispatch this
+workflow or replace the current release.
+
+## Prepare a new native runtime only when needed
+
+Use approved runtime inputs and include original driver files and notices. The
+existing runtime archive includes the allowlisted engine, model, firmware, VC++
+support libraries, USB INF/CAT files, and notices, excluding the vendor GUI,
+recordings, personal configuration, certificates, and private keys.
+
+The [runtime tools](../tools/README.md) provide `build_runtime_release.py` and
+`configure_release.py`; use their `--help` for inputs and choose a new immutable
+runtime release tag. Configuration pins exact archive sizes and SHA-256. Changing
+the archive requires updating the catalog and rebuilding the Python package.
+
+Verify anonymous availability before distributing a package that references the
+new runtime. Exercise download/cache/restart/client-sharing behavior and the
+[clean-Windows hardware checklist](CLEAN_MACHINE_CHECK.md) before broadening installation
+claims. Keep vendor notices in [VENDOR_NOTICE.txt](VENDOR_NOTICE.txt) with the payload.
+
+[Documentation index](README.md)

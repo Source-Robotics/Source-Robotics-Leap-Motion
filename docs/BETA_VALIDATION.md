@@ -1,3 +1,7 @@
+> Versioned historical evidence: this report describes the release or prototype
+> named below. For current status, see [b3 acceptance](B3_VALIDATION.md) and the
+> [documentation index](README.md).
+
 **Beta 0.1.0b1 validation - 5 November 2026**
 
 This release candidate implements automatic runtime delivery and cache selection,
