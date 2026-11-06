@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="local-session" content="__TOKEN__" />
+    <title>Teleoperation Lab · Source Robotics</title>
+    <link rel="stylesheet" href="/lab.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <div class="mark">↗</div>
+        SOURCE ROBOTICS
+      </div>
+      <div class="tag">SIMULATED ROBOT</div>
+    </header>
+    <main>
+      <div class="heading">
+        <div>
+          <div class="eyebrow">HAND TRACKING / CARTESIAN CONTROL</div>
+          <h1>Teleoperation lab</h1>
+          <p class="subtitle">Calibrate your reach. Shape the movement.</p>
+        </div>
+        <div class="connection">
+          <i id="connection-dot" class="dot"></i
+          ><span id="connection">Connecting</span>
+        </div>
+      </div>
+      <div class="layout">
+        <aside class="side">
+          <section class="card section">
+            <div class="section-label">TRACKING SOURCE</div>
+            <div class="source">
+              <div class="source-icon">⌁</div>
+              <div>
+                <div id="source" class="source-name">Waiting for source</div>
+                <div id="hand-label" class="source-note">No hand data yet</div>
+              </div>
+            </div>
+            <div class="stats">
+              <div>
+                <strong id="fps">—</strong><small class="unit">Hz</small
+                ><span>Received frames</span>
+              </div>
+              <div>
+                <strong id="age">—</strong><small class="unit">ms</small
+                ><span>Local receipt age</span>
+              </div>
+            </div>
+            <button id="reconnect">Reconnect tracking</button>
+          </section>
+          <section class="card section">
+            <div class="state-row">
+              <h2>Control session</h2>
+              <span id="state" class="badge">DISARMED</span>
+            </div>
+            <div id="reason">
+              Place your hand, then arm to capture a reference.
+            </div>
+            <div class="controls">
+              <button id="arm" class="primary" disabled>
+                Arm &amp; calibrate</button
+              ><button id="clutch" disabled>Clutch · reposition hand</button
+              ><button id="disarm" class="stop">Disarm</button>
+            </div>
+            <div class="keyhint">
+              <kbd>Space</kbd> hold clutch &nbsp; <kbd>Esc</kbd> disarm
+            </div>
+            <div id="message" class="message" role="status"></div>
+          </section>
+          <section class="card section">
+            <div class="section-label">MOVEMENT MAPPING</div>
+            <div id="mapping"></div>
+            <p id="frame-rotation" class="mapping-note">
+              Frame rotation: identity
+            </p>
+            <p class="mapping-note">
+              Axes and gains come from your TOML configuration. All positions
+              use metres.
+            </p>
+          </section>
+        </aside>
+        <div>
+          <section class="card stage">
+            <div class="stage-head">
+              <h2>Robot workspace</h2>
+              <div class="legend">
+                <span><i></i>Tool target</span
+                ><span><i class="trail"></i>Path</span>
+              </div>
+            </div>
+            <div class="canvas-wrap">
+              <div class="view-label">CARTESIAN TARGET / ORBIT VIEW</div>
+              <canvas
+                id="scene"
+                aria-label="Three dimensional robot workspace and tool target"
+              ></canvas>
+              <div class="view-help">Drag to orbit · scroll to zoom</div>
+            </div>
+            <div class="coordinates">
+              <div>
+                <div class="coord-label">X POSITION</div>
+                <div id="x" class="coord-value">—</div>
+              </div>
+              <div>
+                <div class="coord-label">Y POSITION</div>
+                <div id="y" class="coord-value">—</div>
+              </div>
+              <div>
+                <div class="coord-label">Z POSITION</div>
+                <div id="z" class="coord-value">—</div>
+              </div>
+            </div>
+          </section>
+          <div class="bottom">
+            <section class="card mini">
+              <div>
+                <h2>Gripper</h2>
+                <p id="grip-label">Normalized openness</p>
+              </div>
+              <div class="grip-track">
+                <div id="grip" class="grip-fill"></div>
+              </div>
+            </section>
+            <section class="card mini">
+              <div>
+                <h2>Targets delivered</h2>
+                <p id="limit">Waiting for calibration</p>
+              </div>
+              <span id="sequence" class="metric">0</span>
+            </section>
+          </div>
+          <div class="footer">
+            <span
+              >Output: simulated Cartesian arm<br />Feedback follows targets
+              immediately; no joint or dynamics model.</span
+            ><span
+              >Latest-frame acquisition<br />Source Robotics · Leap Motion</span
+            >
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="/lab.js" defer></script>
+  </body>
+</html>

@@ -4,26 +4,43 @@ A Python package for the **Original Leap Motion Controller**, with owned hand da
 recording/replay, and configurable coordinate mapping for custom robot integrations.
 It runs on current Python without `LeapPython.pyd` or a Python 3.8 process.
 
-Beta **0.1.0b2** is published on [PyPI](https://pypi.org/project/source-robotics-leap-motion/).
-Install it, then start tracking:
+Install the package from [PyPI](https://pypi.org/project/source-robotics-leap-motion/),
+then start tracking:
 
 ```powershell
-python -m pip install source-robotics-leap-motion
+python -m pip install --upgrade source-robotics-leap-motion
 source-leap
 ```
 
 The Windows engine downloads automatically when needed. First-use driver setup may
-require Windows approval. See [release status and validation](docs/BETA_VALIDATION.md)
-and [publication steps](docs/RELEASING.md). Linux/macOS currently use an installed
+require Windows approval. See [release status and validation](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/BETA_VALIDATION.md)
+and [publication steps](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/RELEASING.md). Linux/macOS currently use an installed
 vendor tracking service and remain experimental for hardware use.
 
-Version **0.1.0b2** includes latest-frame acquisition and tracking health. Both are
-available in the published package. See [the latest-frame guide](docs/LATEST_FRAMES.md).
+Version **0.1.0b3** adds configurable Cartesian teleoperation, callback integration,
+and a browser lab with simulated output. It includes latest-frame acquisition and
+tracking health. See
+[the teleoperation guide](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/TELEOPERATION.md) and [latest-frame guide](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/LATEST_FRAMES.md).
 
-**Try it in this project's virtual environment.** Python 3.15.2 and the package are
-already installed in `.venv`. No activation is necessary:
+Try the simulated robot target with a synthetic hand, or with your Leap controller:
 
 ```powershell
+source-leap teleop --demo
+source-leap teleop
+```
+
+The local browser viewer starts disarmed. Arm to calibrate, clutch to reposition
+your hand, and disarm to hold output. Both commands use a simulated Cartesian arm.
+The callback API accepts your own controller; joint-only arms supply their kinematics
+in the adapter. Configure workspace, speed limits, axes, gains, smoothing, rotation,
+and gripper mapping in [teleoperation.toml](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/examples/teleoperation.toml).
+
+**Run from a source checkout.** Create a virtual environment with Python 3.10 or
+newer. No activation is necessary when calling its executables directly:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install .
 .\.venv\Scripts\source-leap.exe --demo
 .\.venv\Scripts\source-leap.exe setup
 .\.venv\Scripts\source-leap.exe doctor --probe
@@ -41,14 +58,20 @@ python -m pip install .
 source-leap --demo
 ```
 
-Python **3.10 or newer** is required. The published b2 wheel was installed and tested on
+Python **3.10 or newer** is required. The b3 wheel was installed and tested on
 **CPython 3.10.11, 3.11.9, 3.12.10, 3.13.17, 3.14.10, and 3.15.2, Windows x64**.
-Each version passed all 107 tests, received live camera frames, and replayed a recorded
+Each version passed all 180 tests, received live camera frames, and replayed a recorded
 real hand. Python 3.10 additionally uses small `tomli` and `typing-extensions`
 backports, installed automatically by pip. All versions use `websocket-client`.
 Python 3.9 and earlier are not supported by the new package.
 
-The [compatibility and performance report](docs/COMPATIBILITY_PERFORMANCE.md) explains
+The live b3 acceptance run checked calibration, clutch/resume, loss of a visible hand,
+explicit rearming, disarming, and shutdown against simulated output. Clean-Windows
+driver setup and real robot-controller validation remain separate hardware checks.
+See the [b3 acceptance evidence](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/B3_VALIDATION.md) and
+[clean-machine checklist](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/CLEAN_MACHINE_CHECK.md).
+
+The [compatibility and performance report](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/COMPATIBILITY_PERFORMANCE.md) explains
 the test matrix, measured stream rate, comparison with the original Python 3.8 SDK,
 and remaining limits. The tracking engine and driver are unchanged; no improvement
 in tracking accuracy or camera frame rate is claimed.
@@ -65,7 +88,7 @@ On this PC, the fallback was verified with service `3.2.1+45911` on
 `127.0.0.1:6437` and the actual Original Leap Motion Controller. A 30-second check
 captured 3,399 frames, including 53 frames containing a left hand with all five
 fingers and four bones per finger. Recording and replay also passed. See
-[the hardware validation notes](docs/HARDWARE_VALIDATION.md).
+[the hardware validation notes](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/HARDWARE_VALIDATION.md).
 
 An existing working legacy service can therefore be used without upgrading it.
 The native LeapC loader supports Windows x64, Linux x64, and macOS Intel/Apple
@@ -115,9 +138,9 @@ The project owner confirmed redistribution permission on 5 November 2026. The
 installed beta wheel also passed two-client sharing, repeated startup, crash cleanup,
 and a live-frame check of the restored installed service. Clean-PC USB setup and
 other-platform hardware tests remain pending.
-See [the prototype, evidence, and bounded test command](docs/MINIMAL_RUNTIME.md).
+See [the prototype, evidence, and bounded test command](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/MINIMAL_RUNTIME.md).
 The proposed first-use flow and Windows/Linux/macOS targets are documented in
-[installation and platforms](docs/INSTALLATION_PLATFORMS.md).
+[installation and platforms](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/INSTALLATION_PLATFORMS.md).
 
 **Read hand data.** The same API accepts live, synthetic, and replay sources:
 
@@ -164,7 +187,7 @@ The default remains sequential, which is appropriate when recording every frame.
 received/delivered/skipped/duplicate counts, timeouts, timestamp resets, and hand
 count. No hands still means the camera is streaming. Age is measured **since Python
 received the frame**, not end-to-end camera latency. It cannot detect every delay
-inside a service or transport. See [semantics and validation](docs/LATEST_FRAMES.md).
+inside a service or transport. See [semantics and validation](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/LATEST_FRAMES.md).
 
 ```powershell
 .\.venv\Scripts\source-leap.exe --latest --health --duration 10
@@ -244,6 +267,6 @@ falls back to another backend. Normal users should not need either option.
 ```
 
 The original scripts and binaries remain historical references. The original README
-is preserved in [docs/LEGACY_README.md](docs/LEGACY_README.md). Current scope and design
+is preserved in [docs/LEGACY_README.md](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/LEGACY_README.md). Current scope and design
 are in [PACKAGE_DESIGN.md](PACKAGE_DESIGN.md); native-interface verification is described
-in [docs/NATIVE_ABI.md](docs/NATIVE_ABI.md).
+in [docs/NATIVE_ABI.md](https://github.com/Source-Robotics/Source-Robotics-Leap-Motion/blob/main/docs/NATIVE_ABI.md).

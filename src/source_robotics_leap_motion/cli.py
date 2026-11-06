@@ -106,6 +106,26 @@ def _parser() -> argparse.ArgumentParser:
     replay.add_argument("--json", action="store_true")
     replay.add_argument("--health", action="store_true")
     replay.add_argument("--timeout", type=_positive_float, default=5)
+    lab = commands.add_parser("teleop", help="inspect hand control with a simulated Cartesian arm")
+    lab.add_argument("--demo", action="store_true", help="use a synthetic hand")
+    lab.add_argument("--replay", help="use a recorded hand session at recorded speed")
+    lab.add_argument("--config", help="teleoperation TOML with workspace and speed limits")
+    lab.add_argument("--headless", action="store_true", help="run without the browser viewer")
+    lab.add_argument(
+        "--auto-arm", action="store_true", help="automatically calibrate the simulated arm once"
+    )
+    lab.add_argument("--json", action="store_true", help="headless lab telemetry as JSON Lines")
+    lab.add_argument(
+        "--no-browser", action="store_true", help="print the viewer URL without opening it"
+    )
+    lab.add_argument(
+        "--port", type=int, default=0, help="loopback viewer port; zero selects a free port"
+    )
+    lab.add_argument("--duration", type=_positive_float)
+    lab.add_argument("--frames", type=_positive_int)
+    runtime = lab.add_mutually_exclusive_group()
+    runtime.add_argument("--library")
+    runtime.add_argument("--runtime-dir")
     runtime = commands.add_parser("runtime", help="prepare or inspect a local runtime prototype")
     actions = runtime.add_subparsers(dest="runtime_action", required=True)
     prepare = actions.add_parser(
@@ -360,6 +380,7 @@ def main(argv: list[str] | None = None) -> int:
         "record",
         "replay",
         "runtime",
+        "teleop",
         "--version",
         "--help",
         "-h",
@@ -375,6 +396,10 @@ def main(argv: list[str] | None = None) -> int:
             return _doctor(args)
         if args.command == "runtime":
             return _runtime(args)
+        if args.command == "teleop":
+            from .lab import run_lab
+
+            return run_lab(args)
         return _run(args)
     except KeyboardInterrupt:
         print("Stopped.", file=sys.stderr)

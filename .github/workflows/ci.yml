@@ -28,6 +28,7 @@ jobs:
       - run: python -m ruff format --check src tests examples tools/build_runtime_release.py tools/configure_release.py tools/check_release.py tools/probe_private_runtime.py tools/benchmark_latest.py
       - run: source-leap --demo --frames 3 --json
       - run: source-leap --demo --latest --health --frames 3 --json
+      - run: source-leap teleop --demo --headless --auto-arm --frames 3 --json
   build:
     runs-on: ubuntu-latest
     steps:

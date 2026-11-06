@@ -1,0 +1,30 @@
+# Example bounds for the simulated arm. Supply your own bounds for a real robot.
+[workspace]
+minimum = [0.0, -0.3, 0.0]
+maximum = [0.6, 0.3, 0.6]
+
+[mapping]
+axes = ["-z", "-x", "y"]
+# Optional arbitrary frame rotation after axis assignment; normalized x/y/z/w.
+rotation = [0.0, 0.0, 0.0, 1.0]
+gain = [0.75, 0.75, 0.75]
+
+[teleoperation]
+handedness = "right"
+max_linear_speed = 0.2          # metres/second, norm of Cartesian target movement
+control_orientation = true
+rotation_gain = 1.0
+max_angular_speed = 1.0         # radians/second
+smoothing_time_constant = 0.05  # seconds; zero disables smoothing
+position_deadband = 0.001       # metres
+max_frame_age = 0.1            # seconds since local receipt
+tracking_timeout = 0.15        # seconds between valid updates
+max_output_hz = 60.0           # maximum command frequency, not a fixed-rate guarantee
+
+# Omit this table to disable gripper control.
+[gripper]
+source = "grab"                # "grab" or "pinch"
+open_value = 1.0
+closed_value = 0.0
+max_speed = 1.0                # normalized units/second
+deadband = 0.01
