@@ -1,7 +1,8 @@
 # Documentation
 
 Start with [installation and the two Windows setup paths](../README.md#install-and-run-on-windows).
-The current public package is **0.1.0b3**. Windows tracking and simulated output have
+Package versions are listed on [PyPI](https://pypi.org/project/source-robotics-leap-motion/).
+Windows tracking and simulated output have
 live hardware evidence; clean-PC driver setup and Linux/macOS hardware remain pending.
 
 ## Using the package
@@ -34,7 +35,8 @@ CI does not establish USB/controller support on an untested operating system.
 
 | Report | Scope |
 | --- | --- |
-| [b3 acceptance](B3_VALIDATION.md) | Current live-hand behavior, 20-minute soak, Python matrix, and remaining checks |
+| [b4 receiver validation](B4_VALIDATION.md) | Installed-wheel matrix, independent gripper filtering, interpolation/expiry, and recorded-hand receiver replay |
+| [b3 acceptance](B3_VALIDATION.md) | Live-hand behavior, 20-minute camera soak, Python matrix, and remaining hardware checks |
 | [Clean Windows checklist](CLEAN_MACHINE_CHECK.md) | Procedure for a PC without an existing Leap installation; still pending |
 | [b1 runtime validation](BETA_VALIDATION.md) | Earlier delivery, caching, shared leases, restart, and crash cleanup |
 | [Compatibility and performance](COMPATIBILITY_PERFORMANCE.md) | Earlier Python-version checks and old-SDK comparison measurements |

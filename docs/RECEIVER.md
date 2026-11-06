@@ -1,7 +1,7 @@
 # Interpolated simulated receiver
 
-> These additions are prepared for 0.1.0b4. Until that version is published, use a
-> [source checkout](../CONTRIBUTING.md#set-up-a-source-checkout). PyPI currently provides b3.
+> Requires 0.1.0b4 or newer. If that version is not yet available from PyPI, use a
+> [source checkout](../CONTRIBUTING.md#set-up-a-source-checkout).
 
 Version **0.1.0b4** adds an optional simulated command receiver and independent gripper
 filtering. The base install remains dependency-light. These components use the
