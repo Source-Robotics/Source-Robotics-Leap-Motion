@@ -1,4 +1,4 @@
-**Generic teleoperation — 0.1.0b3 development**
+**Generic teleoperation — 0.1.0b3**
 
 The package now includes relative Cartesian control, a synchronous adapter contract,
 and a browser lab with a simulated output. The lab is bundled with the Python package
