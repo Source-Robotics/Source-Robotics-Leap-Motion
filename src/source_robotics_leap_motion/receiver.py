@@ -174,14 +174,14 @@ class CartesianReceiver:
         if self._state in ("fault", "closed"):
             raise ValueError("Reopen the receiver after fault or close")
         same = session_id == self._session
+        if same and not self._resume_allowed:
+            raise ValueError("Use a new session after disarming or command expiry")
         if after_sequence is None:
             if same:
                 raise ValueError("Resume requires the sender's sequence watermark")
             after_sequence = 0
         if type(after_sequence) is not int or after_sequence < 0:
             raise ValueError("Session sequence watermark must be a non-negative integer")
-        if same and not self._resume_allowed:
-            raise ValueError("Use a new session after disarming or command expiry")
         if self._state in ("armed", "active"):
             raise ValueError("Hold the current receiver session before starting another")
         if same and after_sequence < self._sequence:
